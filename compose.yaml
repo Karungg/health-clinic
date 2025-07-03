@@ -1,0 +1,14 @@
+services:
+  mysql:
+    image: 'mysql:latest'
+    environment:
+      - 'MYSQL_DATABASE=health_clinic'
+      - 'MYSQL_PASSWORD=karung123'
+      - 'MYSQL_ROOT_PASSWORD=rootkarung123'
+      - 'MYSQL_USER=karung'
+    ports:
+      - '3306'
+  adminer:
+    image: 'adminer:latest'
+    ports:
+      - '8081:8080'
