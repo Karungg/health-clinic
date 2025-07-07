@@ -8,11 +8,11 @@ import lombok.Data;
 public class CreateUserRequest {
 
     @NotBlank(message = "{user.username.notblank}")
-    @Size(min = 3, max = 255, message = "{user.username.size}")
+    @Size(min = 3, message = "{user.username.size}")
     private String username;
 
     @NotBlank(message = "{user.password.notblank}")
-    @Size(min = 3, max = 255, message = "{user.password.size}")
+    @Size(min = 3, message = "{user.password.size}")
     private String password;
 
 }
