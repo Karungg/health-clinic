@@ -9,5 +9,5 @@ import healthclinic.health_clinic.models.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
-
+    User findByUsernameEquals(String username);
 }
