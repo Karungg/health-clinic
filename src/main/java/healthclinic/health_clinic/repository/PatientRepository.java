@@ -9,5 +9,5 @@ import healthclinic.health_clinic.models.Patient;
 
 @Repository
 public interface PatientRepository extends JpaRepository<Patient, UUID> {
-
+    Patient findByFullNameEquals(String fullName);
 }
