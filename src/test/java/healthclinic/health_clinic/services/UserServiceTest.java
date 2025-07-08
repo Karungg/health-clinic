@@ -1,5 +1,7 @@
 package healthclinic.health_clinic.services;
 
+import java.util.Optional;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +34,7 @@ public class UserServiceTest {
         request.setPassword("password");
 
         CreateUserResponse user = userService.createUser(request);
-        User userFromRepo = userRepository.findByUsernameEquals("user 1");
+        User userFromRepo = userRepository.findByUsername("user 1").orElse(null);
 
         Assertions.assertThat(user.getId()).isEqualTo(userFromRepo.getId());
     }

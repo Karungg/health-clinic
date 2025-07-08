@@ -1,5 +1,7 @@
 package healthclinic.health_clinic.services;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +41,7 @@ public class PatientServiceImpl implements PatientService {
 
         patient.setAddress(address);
 
-        User user = userRepository.findByIdEquals(request.getUserId());
+        User user = userRepository.findByIdEquals(request.getUserId()).orElse(null);
         patient.setUser(user);
 
         Patient savedPatient = patientRepository.save(patient);

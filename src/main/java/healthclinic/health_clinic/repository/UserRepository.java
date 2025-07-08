@@ -1,5 +1,6 @@
 package healthclinic.health_clinic.repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,7 +10,7 @@ import healthclinic.health_clinic.models.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
-    User findByUsernameEquals(String username);
+    Optional<User> findByUsername(String username);
 
-    User findByIdEquals(UUID id);
+    Optional<User> findByIdEquals(UUID id);
 }
