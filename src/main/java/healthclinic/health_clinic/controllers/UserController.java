@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 public class UserController {
@@ -48,7 +47,7 @@ public class UserController {
         return ResponseEntity.ok().body("User with username " + response.getUsername() + " successfully created");
     }
 
-    @PutMapping(path = "/api/users/{userId}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(path = "/api/users/{userId}/edit", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> updateUser(@PathVariable(name = "userId", required = true) UUID userId,
             @ModelAttribute @Valid CreateUserRequest request,
             BindingResult bindingResult) {
