@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import healthclinic.health_clinic.dto.CreateUserRequest;
 import healthclinic.health_clinic.dto.CreateUserResponse;
+import healthclinic.health_clinic.exception.ResourceNotFoundException;
 import healthclinic.health_clinic.models.User;
 import healthclinic.health_clinic.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -65,6 +66,19 @@ public class UserServiceImpl implements UserService {
                 .stream()
                 .map(this::convertToUserResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteUser(UUID userId) {
+        log.info("Attempting to delete user with id {}", userId);
+
+        if (!userRepository.existsById(userId)) {
+            log.warn("User deleted failed, user with id {} doens't exists.", userId);
+            throw new ResourceNotFoundException("User with id " + userId + " doesn't exists.");
+        }
+
+        userRepository.deleteById(userId);
+        log.info("User with id {} successfully deleted.", userId);
     }
 
     @Transactional(readOnly = true)

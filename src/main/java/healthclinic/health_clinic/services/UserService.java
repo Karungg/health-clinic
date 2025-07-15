@@ -14,4 +14,6 @@ public interface UserService {
     List<CreateUserResponse> findAllUsers();
 
     Long isExistsByUsernameNotId(String username, UUID userId);
+
+    void deleteUser(UUID userId);
 }
