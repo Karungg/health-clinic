@@ -1,6 +1,7 @@
 package healthclinic.health_clinic.services;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,12 +40,36 @@ public class UserServiceImpl implements UserService {
         return convertToUserResponse(savedUser);
     }
 
+    @Transactional
+    public CreateUserResponse updateUser(UUID userId, CreateUserRequest request) {
+        log.info("Attempting to update user with username {}", request.getUsername());
+
+        if (isExistsByUsernameNotId(request.getUsername(), userId) == 1) {
+            log.warn("User updated failed. Username {} already exists.", request.getUsername());
+            throw new IllegalArgumentException("Username " + request.getUsername() + " is already taken.");
+        }
+
+        User user = userRepository.findByIdEquals(userId).orElse(null);
+        user.setUsername(request.getUsername());
+        user.setPassword(request.getPassword());
+
+        User savedUser = userRepository.save(user);
+        log.info("User with username {} successfully updated", savedUser.getUsername());
+
+        return convertToUserResponse(savedUser);
+    }
+
     @Transactional(readOnly = true)
     public List<CreateUserResponse> findAllUsers() {
         return userRepository.findAll()
                 .stream()
                 .map(this::convertToUserResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public Long isExistsByUsernameNotId(String username, UUID userId) {
+        return userRepository.existsByUsernameNotId(username, userId);
     }
 
     private CreateUserResponse convertToUserResponse(User user) {

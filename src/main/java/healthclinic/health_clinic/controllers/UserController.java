@@ -1,6 +1,7 @@
 package healthclinic.health_clinic.controllers;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,9 @@ import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 public class UserController {
@@ -43,4 +46,18 @@ public class UserController {
         return ResponseEntity.ok().body("User with username " + response.getUsername() + " successfully created");
     }
 
+    @PutMapping(path = "/api/users/{userId}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> updateUser(@PathVariable UUID userId,
+            @ModelAttribute @Valid CreateUserRequest request,
+            BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            List<String> errors = bindingResult.getAllErrors().stream().map(v -> v.getDefaultMessage())
+                    .collect(Collectors.toList());
+            return ResponseEntity.badRequest().body(errors.toString());
+        }
+
+        CreateUserResponse response = userService.updateUser(userId, request);
+
+        return ResponseEntity.ok().body("User with username " + response.getUsername() + " successfully updated");
+    }
 }
