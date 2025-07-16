@@ -15,6 +15,8 @@ public class CreatePatientResponse {
 
     private String fullName;
 
+    private Integer nik;
+
     private Date dateOfBirth;
 
     private Integer age;

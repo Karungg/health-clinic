@@ -1,9 +1,8 @@
 package healthclinic.health_clinic.services;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import healthclinic.health_clinic.dto.Address;
 import healthclinic.health_clinic.dto.CreatePatientRequest;
@@ -22,9 +21,11 @@ public class PatientServiceImpl implements PatientService {
     @Autowired
     private UserRepository userRepository;
 
+    @Transactional
     public CreatePatientResponse createPatient(CreatePatientRequest request) {
         Patient patient = new Patient();
         patient.setFullName(request.getFullName());
+        patient.setNik(request.getNik());
         patient.setAge(request.getAge());
         patient.setBloodType(request.getBloodType());
         patient.setGender(request.getGender());
@@ -53,6 +54,7 @@ public class PatientServiceImpl implements PatientService {
         return new CreatePatientResponse(
                 patient.getId(),
                 patient.getFullName(),
+                patient.getNik(),
                 patient.getDateOfBirth(),
                 patient.getAge(),
                 patient.getAddress(),

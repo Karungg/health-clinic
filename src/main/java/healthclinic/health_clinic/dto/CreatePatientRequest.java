@@ -14,6 +14,10 @@ public class CreatePatientRequest {
     @Size(min = 3, message = "{patient.fullname.size}")
     private String fullName;
 
+    @NotBlank(message = "{patient.nik.notblank}")
+    @Size(min = 16, max = 16, message = "{patient.nik.size}")
+    private Integer nik;
+
     @NotBlank(message = "{patient.dateofbirth.notblank}")
     private Date dateOfBirth;
 
