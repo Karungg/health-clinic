@@ -1,7 +1,7 @@
 package healthclinic.health_clinic.models;
 
 import java.time.Instant;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -39,10 +39,10 @@ public class Patient {
     private String nik;
 
     @Column(name = "date_of_birth", nullable = false)
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @Column(name = "age", nullable = false, length = 3)
-    private Integer age;
+    private String age;
 
     @Convert(converter = AddressAttributeConverter.class)
     @Column(name = "address", length = 500, nullable = false)
@@ -61,10 +61,10 @@ public class Patient {
     private String placeOfBirth;
 
     @Column(name = "weight", nullable = false, length = 3)
-    private Integer weight;
+    private String weight;
 
     @Column(name = "height", nullable = false, length = 3)
-    private Integer height;
+    private String height;
 
     @Column(name = "blood_type", nullable = false, length = 2)
     private String bloodType;

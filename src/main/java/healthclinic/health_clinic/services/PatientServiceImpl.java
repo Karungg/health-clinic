@@ -1,6 +1,10 @@
 package healthclinic.health_clinic.services;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,9 +27,19 @@ public class PatientServiceImpl implements PatientService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Transactional
     public CreatePatientResponse createPatient(CreatePatientRequest request) {
         log.info("Attempting to create patient with fullName {}", request.getFullName());
+
+        validateUnique(request);
+
+        User user = new User();
+        user.setUsername(request.getUser().getUsername());
+        user.setPassword(passwordEncoder.encode(request.getUser().getPassword()));
+        User savedUser = userRepository.save(user);
 
         Patient patient = new Patient();
         patient.setFullName(request.getFullName());
@@ -38,20 +52,26 @@ public class PatientServiceImpl implements PatientService {
         patient.setPlaceOfBirth(request.getPlaceOfBirth());
         patient.setDateOfBirth(request.getDateOfBirth());
         patient.setWeight(request.getWeight());
+        patient.setJob(request.getJob());
+        patient.setUser(savedUser);
 
         Address address = new Address();
         address.setCity(request.getAddress().getCity());
         address.setPostalCode(request.getAddress().getPostalCode());
         address.setStreet(request.getAddress().getStreet());
-
         patient.setAddress(address);
-
-        User user = userRepository.findByIdEquals(request.getUserId()).orElse(null);
-        patient.setUser(user);
 
         Patient savedPatient = patientRepository.save(patient);
 
         return convertToPatientResponse(savedPatient);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CreatePatientResponse> findAllPatients() {
+        return patientRepository.findAll()
+                .stream()
+                .map(this::convertToPatientResponse)
+                .collect(Collectors.toList());
     }
 
     private CreatePatientResponse convertToPatientResponse(Patient patient) {
@@ -72,6 +92,23 @@ public class PatientServiceImpl implements PatientService {
                 patient.getUser().getId(),
                 patient.getCreatedAt(),
                 patient.getUpdatedAt());
+    }
+
+    private void validateUnique(CreatePatientRequest request) {
+        userRepository.findByUsername(request.getUser().getUsername()).ifPresent(value -> {
+            log.warn("Patient created failed. Username {} is already exists.", value.getUsername());
+            throw new IllegalArgumentException("Username " + value.getUsername() + " is already taken.");
+        });
+
+        patientRepository.findByNik(request.getNik()).ifPresent(value -> {
+            log.warn("Patient created failed. NIK {} is already exists.", value.getNik());
+            throw new IllegalArgumentException("NIK " + value.getNik() + " is already taken.");
+        });
+
+        patientRepository.findByPhone(request.getPhone()).ifPresent(value -> {
+            log.warn("Patient created failed. Phone {} is already exists.", value.getPhone());
+            throw new IllegalArgumentException("Phone " + value.getPhone() + " is already taken.");
+        });
     }
 
 }

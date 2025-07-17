@@ -1,7 +1,7 @@
 package healthclinic.health_clinic.dto;
 
 import java.time.Instant;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -15,15 +15,15 @@ public class CreatePatientResponse {
 
     private String fullName;
 
-    private Integer nik;
+    private String nik;
 
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
 
-    private Integer age;
+    private String age;
 
     private Address address;
 
-    private Integer phone;
+    private String phone;
 
     private String gender;
 
@@ -31,9 +31,9 @@ public class CreatePatientResponse {
 
     private String placeOfBirth;
 
-    private Integer weight;
+    private String weight;
 
-    private Integer height;
+    private String height;
 
     private String bloodType;
 

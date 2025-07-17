@@ -6,6 +6,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -23,6 +24,12 @@ public class PatientRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
+    @BeforeEach
+    void setUp() {
+        patientRepository.deleteAll();
+        userRepository.deleteAll();
+    }
+
     @Test
     void createPatientSuccess() {
         User user = new User();
@@ -33,22 +40,21 @@ public class PatientRepositoryTest {
 
         Address address = new Address();
         address.setCity("Bogor");
-        address.setPostalCode(16116);
+        address.setPostalCode("16116");
         address.setStreet("Dramaga");
-        LocalDate dateOfBirth = LocalDate.of(2004, 11, 27);
 
         Patient patient = new Patient();
         patient.setFullName("pasien 1");
-        patient.setAge(20);
+        patient.setAge("20");
         patient.setBloodType("O");
-        patient.setDateOfBirth(Date.valueOf(dateOfBirth));
+        patient.setDateOfBirth(LocalDate.of(2004, 11, 27));
         patient.setGender("Pria");
-        patient.setHeight(170);
+        patient.setHeight("170");
         patient.setJob("Programmer");
         patient.setNik("123456789123456");
         patient.setPhone("123456789");
         patient.setPlaceOfBirth("Bogor");
-        patient.setWeight(55);
+        patient.setWeight("55");
         patient.setUser(user);
         patient.setAddress(address);
 

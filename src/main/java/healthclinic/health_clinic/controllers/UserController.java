@@ -28,7 +28,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping(path = "/api/users")
+    @GetMapping(path = "/api/users", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<CreateUserResponse>> getUsers() {
         return ResponseEntity.ok().body(userService.findAllUsers());
     }

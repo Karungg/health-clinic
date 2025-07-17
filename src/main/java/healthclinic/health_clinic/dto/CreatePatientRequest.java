@@ -1,14 +1,23 @@
 package healthclinic.health_clinic.dto;
 
-import java.util.Date;
-import java.util.UUID;
+import java.time.LocalDate;
 
+import healthclinic.health_clinic.models.User;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class CreatePatientRequest {
+
+    private Address address;
+
+    private User user;
 
     @NotBlank(message = "{patient.fullname.notblank}")
     @Size(min = 3, message = "{patient.fullname.size}")
@@ -16,21 +25,18 @@ public class CreatePatientRequest {
 
     @NotBlank(message = "{patient.nik.notblank}")
     @Size(min = 16, max = 16, message = "{patient.nik.size}")
-    private Integer nik;
+    private String nik;
 
-    @NotBlank(message = "{patient.dateofbirth.notblank}")
-    private Date dateOfBirth;
+    @NotNull(message = "{patient.dateOfBirth.notnull}")
+    private LocalDate dateOfBirth;
 
     @NotBlank(message = "{patient.age.notblank}")
     @Size(max = 3, message = "{patient.age.size}")
-    private Integer age;
-
-    @NotBlank(message = "{patient.address.notblank}")
-    private Address address;
+    private String age;
 
     @NotBlank(message = "{patient.phone.notblank}")
     @Size(min = 9, max = 14, message = "{patient.phone.size}")
-    private Integer phone;
+    private String phone;
 
     @NotBlank(message = "{patient.gender.notblank}")
     @Size(max = 6, message = "{patient.gender.size}")
@@ -46,16 +52,13 @@ public class CreatePatientRequest {
 
     @NotBlank(message = "{patient.weight.notblank}")
     @Size(max = 3, message = "{patient.weight.size}")
-    private Integer weight;
+    private String weight;
 
     @NotBlank(message = "{patient.height.notblank}")
     @Size(max = 3, message = "{patient.height.size}")
-    private Integer height;
+    private String height;
 
     @NotBlank(message = "{patient.bloodtype.notblank}")
     @Size(max = 2, message = "{patient.bloodtype.size}")
     private String bloodType;
-
-    @NotBlank(message = "{patient.userid.notblank}")
-    private UUID userId;
 }
