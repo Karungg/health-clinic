@@ -11,7 +11,9 @@ import healthclinic.health_clinic.models.Patient;
 import healthclinic.health_clinic.models.User;
 import healthclinic.health_clinic.repository.PatientRepository;
 import healthclinic.health_clinic.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class PatientServiceImpl implements PatientService {
 
@@ -23,6 +25,8 @@ public class PatientServiceImpl implements PatientService {
 
     @Transactional
     public CreatePatientResponse createPatient(CreatePatientRequest request) {
+        log.info("Attempting to create patient with fullName {}", request.getFullName());
+
         Patient patient = new Patient();
         patient.setFullName(request.getFullName());
         patient.setNik(request.getNik());
