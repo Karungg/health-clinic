@@ -36,7 +36,7 @@ public class Patient {
     private String fullName;
 
     @Column(name = "nik", nullable = false, unique = true)
-    private Integer nik;
+    private String nik;
 
     @Column(name = "date_of_birth", nullable = false)
     private Date dateOfBirth;
@@ -49,7 +49,7 @@ public class Patient {
     private Address address;
 
     @Column(name = "phone", nullable = false, length = 14, unique = true)
-    private Integer phone;
+    private String phone;
 
     @Column(name = "gender", nullable = false)
     private String gender;
