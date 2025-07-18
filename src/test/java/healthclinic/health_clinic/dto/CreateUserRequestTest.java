@@ -3,10 +3,12 @@ package healthclinic.health_clinic.dto;
 import java.util.Set;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import healthclinic.health_clinic.repository.UserRepository;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import static org.assertj.core.groups.Tuple.tuple;
@@ -16,6 +18,14 @@ public class CreateUserRequestTest {
 
     @Autowired
     private Validator validator;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @BeforeEach
+    void setUp() {
+        userRepository.deleteAll();
+    }
 
     @Test
     void createUserDto() {

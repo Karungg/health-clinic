@@ -8,6 +8,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import healthclinic.health_clinic.repository.PatientRepository;
+import healthclinic.health_clinic.repository.UserRepository;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -29,9 +30,13 @@ public class PatientControllerTest {
         @Autowired
         private PatientRepository patientRepository;
 
+        @Autowired
+        private UserRepository userRepository;
+
         @BeforeEach
         void setUp() {
                 patientRepository.deleteAll();
+                userRepository.deleteAll();
         }
 
         @Test
