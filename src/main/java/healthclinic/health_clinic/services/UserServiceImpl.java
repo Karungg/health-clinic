@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
     public CreateUserResponse updateUser(UUID userId, CreateUserRequest request) {
         log.info("Attempting to update user with username {}", request.getUsername());
 
-        if (isExistsByUsernameNotId(request.getUsername(), userId) == 1) {
+        if (isExistsByUsernameNotId(request.getUsername(), userId)) {
             log.warn("User updated failed. Username {} already exists.", request.getUsername());
             throw new IllegalArgumentException("Username " + request.getUsername() + " is already taken.");
         }
@@ -86,8 +86,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional(readOnly = true)
-    public Long isExistsByUsernameNotId(String username, UUID userId) {
-        return userRepository.existsByUsernameNotId(username, userId);
+    public boolean isExistsByUsernameNotId(String username, UUID userId) {
+        return userRepository.existsByUsernameAndIdNot(username, userId);
     }
 
     private CreateUserResponse convertToUserResponse(User user) {
