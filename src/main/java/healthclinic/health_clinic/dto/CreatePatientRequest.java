@@ -17,8 +17,6 @@ public class CreatePatientRequest {
 
     private Address address;
 
-    private User user;
-
     @NotBlank(message = "{patient.fullname.notblank}")
     @Size(min = 3, message = "{patient.fullname.size}")
     private String fullName;

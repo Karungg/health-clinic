@@ -26,6 +26,14 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Transactional(readOnly = true)
+    public List<CreateUserResponse> findAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(this::convertToUserResponse)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public CreateUserResponse createUser(CreateUserRequest request) {
         log.info("Attempting to create user with username {}", request.getUsername());
@@ -49,7 +57,7 @@ public class UserServiceImpl implements UserService {
     public CreateUserResponse updateUser(UUID userId, CreateUserRequest request) {
         log.info("Attempting to update user with username {}", request.getUsername());
 
-        if (isExistsByUsernameNotId(request.getUsername(), userId)) {
+        if (userRepository.existsByUsernameAndIdNot(request.getUsername(), userId)) {
             log.warn("User updated failed. Username {} already exists.", request.getUsername());
             throw new IllegalArgumentException("Username " + request.getUsername() + " is already taken.");
         }
@@ -64,14 +72,6 @@ public class UserServiceImpl implements UserService {
         return convertToUserResponse(savedUser);
     }
 
-    @Transactional(readOnly = true)
-    public List<CreateUserResponse> findAllUsers() {
-        return userRepository.findAll()
-                .stream()
-                .map(this::convertToUserResponse)
-                .collect(Collectors.toList());
-    }
-
     @Transactional
     public void deleteUser(UUID userId) {
         log.info("Attempting to delete user with id {}", userId);
@@ -83,11 +83,6 @@ public class UserServiceImpl implements UserService {
 
         userRepository.deleteById(userId);
         log.info("User with id {} successfully deleted.", userId);
-    }
-
-    @Transactional(readOnly = true)
-    public boolean isExistsByUsernameNotId(String username, UUID userId) {
-        return userRepository.existsByUsernameAndIdNot(username, userId);
     }
 
     private CreateUserResponse convertToUserResponse(User user) {

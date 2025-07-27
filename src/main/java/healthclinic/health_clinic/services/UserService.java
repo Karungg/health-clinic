@@ -7,13 +7,11 @@ import healthclinic.health_clinic.dto.CreateUserRequest;
 import healthclinic.health_clinic.dto.CreateUserResponse;
 
 public interface UserService {
+    List<CreateUserResponse> findAllUsers();
+
     CreateUserResponse createUser(CreateUserRequest request);
 
     CreateUserResponse updateUser(UUID userId, CreateUserRequest request);
-
-    List<CreateUserResponse> findAllUsers();
-
-    boolean isExistsByUsernameNotId(String username, UUID userId);
 
     void deleteUser(UUID userId);
 }
