@@ -4,12 +4,13 @@ import java.util.List;
 import java.util.UUID;
 
 import healthclinic.health_clinic.dto.CreatePatientRequest;
-import healthclinic.health_clinic.dto.CreatePatientResponse;
+import healthclinic.health_clinic.dto.PatientResponse;
 
 public interface PatientService {
-    CreatePatientResponse createPatient(CreatePatientRequest request);
+    List<PatientResponse> findAllPatients();
 
-    CreatePatientResponse updatePatient(CreatePatientRequest request, UUID patientId);
+    PatientResponse createPatient(CreatePatientRequest request);
 
-    List<CreatePatientResponse> findAllPatients();
+    PatientResponse updatePatient(CreatePatientRequest request, UUID patientId);
+
 }

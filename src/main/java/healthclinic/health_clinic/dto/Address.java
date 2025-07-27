@@ -2,9 +2,11 @@ package healthclinic.health_clinic.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 public class Address {
 
     @Size(min = 3, message = "{address.city.size}")

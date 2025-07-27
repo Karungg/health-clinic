@@ -2,15 +2,18 @@ package healthclinic.health_clinic.dto;
 
 import java.time.LocalDate;
 
-import healthclinic.health_clinic.models.User;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreatePatientRequest {
@@ -29,8 +32,9 @@ public class CreatePatientRequest {
     private LocalDate dateOfBirth;
 
     @NotBlank(message = "{patient.age.notblank}")
-    @Size(max = 3, message = "{patient.age.size}")
-    private String age;
+    @Min(value = 0, message = "{patient.age.min}")
+    @Max(value = 999, message = "{patient.age.max}")
+    private Integer age;
 
     @NotBlank(message = "{patient.phone.notblank}")
     @Size(min = 9, max = 14, message = "{patient.phone.size}")
@@ -49,12 +53,14 @@ public class CreatePatientRequest {
     private String placeOfBirth;
 
     @NotBlank(message = "{patient.weight.notblank}")
-    @Size(max = 3, message = "{patient.weight.size}")
-    private String weight;
+    @Min(value = 0, message = "{patient.weight.min}")
+    @Max(value = 999, message = "{patient.weight.max}")
+    private Integer weight;
 
     @NotBlank(message = "{patient.height.notblank}")
-    @Size(max = 3, message = "{patient.height.size}")
-    private String height;
+    @Min(value = 0, message = "{patient.height.min}")
+    @Max(value = 999, message = "{patient.height.max}")
+    private Integer height;
 
     @NotBlank(message = "{patient.bloodtype.notblank}")
     @Size(max = 2, message = "{patient.bloodtype.size}")

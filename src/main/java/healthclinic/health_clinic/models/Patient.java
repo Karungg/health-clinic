@@ -41,14 +41,14 @@ public class Patient {
     @Column(name = "date_of_birth", nullable = false)
     private LocalDate dateOfBirth;
 
-    @Column(name = "age", nullable = false, length = 3)
-    private String age;
+    @Column(name = "age", nullable = false)
+    private Integer age;
 
     @Convert(converter = AddressAttributeConverter.class)
     @Column(name = "address", length = 500, nullable = false)
     private Address address;
 
-    @Column(name = "phone", nullable = false, length = 14, unique = true)
+    @Column(name = "phone", nullable = false, length = 20, unique = true)
     private String phone;
 
     @Column(name = "gender", nullable = false)
@@ -60,11 +60,11 @@ public class Patient {
     @Column(name = "place_of_birth", nullable = false)
     private String placeOfBirth;
 
-    @Column(name = "weight", nullable = false, length = 3)
-    private String weight;
+    @Column(name = "weight", nullable = false)
+    private Integer weight;
 
-    @Column(name = "height", nullable = false, length = 3)
-    private String height;
+    @Column(name = "height", nullable = false)
+    private Integer height;
 
     @Column(name = "blood_type", nullable = false, length = 2)
     private String bloodType;

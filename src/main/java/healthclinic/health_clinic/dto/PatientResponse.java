@@ -5,11 +5,13 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
-public class CreatePatientResponse {
+public class PatientResponse {
 
     private UUID id;
 
@@ -19,7 +21,7 @@ public class CreatePatientResponse {
 
     private LocalDate dateOfBirth;
 
-    private String age;
+    private Integer age;
 
     private Address address;
 
@@ -31,9 +33,9 @@ public class CreatePatientResponse {
 
     private String placeOfBirth;
 
-    private String weight;
+    private Integer weight;
 
-    private String height;
+    private Integer height;
 
     private String bloodType;
 

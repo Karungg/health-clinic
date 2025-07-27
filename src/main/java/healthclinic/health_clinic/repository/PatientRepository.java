@@ -12,9 +12,9 @@ import healthclinic.health_clinic.models.Patient;
 public interface PatientRepository extends JpaRepository<Patient, UUID> {
     Patient findByFullNameEquals(String fullName);
 
-    Optional<Patient> findByNik(String nik);
+    Optional<Patient> findByNikEquals(String nik);
 
-    Optional<Patient> findByPhone(String phone);
+    Optional<Patient> findByPhoneEquals(String phone);
 
     boolean existsByNikAndIdNot(String nik, UUID id);
 
