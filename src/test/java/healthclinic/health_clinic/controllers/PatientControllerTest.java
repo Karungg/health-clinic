@@ -7,16 +7,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import healthclinic.health_clinic.repository.PatientRepository;
-import healthclinic.health_clinic.repository.UserRepository;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDate;
 
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @SpringBootTest
@@ -26,18 +22,6 @@ public class PatientControllerTest {
 
         @Autowired
         private MockMvc mockMvc;
-
-        @Autowired
-        private PatientRepository patientRepository;
-
-        @Autowired
-        private UserRepository userRepository;
-
-        @BeforeEach
-        void setUp() {
-                patientRepository.deleteAll();
-                userRepository.deleteAll();
-        }
 
         @Test
         void getPatients() throws Exception {

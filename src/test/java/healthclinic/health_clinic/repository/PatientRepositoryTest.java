@@ -45,16 +45,16 @@ public class PatientRepositoryTest {
 
         Patient patient = new Patient();
         patient.setFullName("pasien 1");
-        patient.setAge("20");
+        patient.setAge(20);
         patient.setBloodType("O");
         patient.setDateOfBirth(LocalDate.of(2004, 11, 27));
         patient.setGender("Pria");
-        patient.setHeight("170");
+        patient.setHeight(170);
         patient.setJob("Programmer");
         patient.setNik("123456789123456");
         patient.setPhone("123456789");
         patient.setPlaceOfBirth("Bogor");
-        patient.setWeight("55");
+        patient.setWeight(55);
         patient.setUser(user);
         patient.setAddress(address);
 

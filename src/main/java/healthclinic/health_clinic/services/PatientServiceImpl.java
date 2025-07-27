@@ -12,7 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import healthclinic.health_clinic.dto.Address;
 import healthclinic.health_clinic.dto.CreatePatientRequest;
-import healthclinic.health_clinic.dto.CreatePatientResponse;
+import healthclinic.health_clinic.dto.CreateUserRequest;
+import healthclinic.health_clinic.dto.PatientResponse;
 import healthclinic.health_clinic.exception.ResourceNotFoundException;
 import healthclinic.health_clinic.models.Patient;
 import healthclinic.health_clinic.models.User;
@@ -34,7 +35,7 @@ public class PatientServiceImpl implements PatientService {
     private PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
-    public List<CreatePatientResponse> findAllPatients() {
+    public List<PatientResponse> findAllPatients() {
         return patientRepository.findAll()
                 .stream()
                 .map(this::convertToPatientResponse)
@@ -42,7 +43,7 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Transactional
-    public CreatePatientResponse createPatient(CreatePatientRequest request) {
+    public PatientResponse createPatient(CreatePatientRequest request) {
         log.info("Attempting to create patient with fullName {}", request.getFullName());
 
         validateUniqueness(request.getUser().getUsername(), request.getNik(), request.getPhone());
@@ -50,7 +51,7 @@ public class PatientServiceImpl implements PatientService {
         User savedUser = createAndSaveUser(request.getUser());
 
         Patient patient = createObjectPatient(request);
-        Address address = createObjectAddress(request);
+        Address address = createObjectAddress(request.getAddress());
 
         patient.setAddress(address);
         patient.setUser(savedUser);
@@ -59,34 +60,10 @@ public class PatientServiceImpl implements PatientService {
         return convertToPatientResponse(savedPatient);
     }
 
-    @Transactional
-    public CreatePatientResponse updatePatient(CreatePatientRequest request, UUID patientId) {
-        log.info("Attempting to update patient with fullName {}", request.getFullName());
-
-        Optional<Patient> patient = patientRepository.findById(patientId);
-
-        if (patient.isEmpty()) {
-            log.warn("Id patient {} not found", patientId);
-            throw new ResourceNotFoundException("Id patient " + patientId + " not found");
-        }
-
-        if (patientRepository.existsByNikAndIdNot(request.getNik(), patientId)) {
-            log.warn("Patient updated failed. NIK {} already exists.", request.getNik());
-            throw new IllegalArgumentException("NIK " + request.getNik() + " is already taken.");
-        }
-
-        if (patientRepository.existsByPhoneAndIdNot(request.getPhone(), patientId)) {
-            log.warn("Patient updated failed. Phone {} already exists.", request.getPhone());
-            throw new IllegalArgumentException("Phone " + request.getPhone() + " is already taken.");
-        }
-
-        return convertToPatientResponse(updatedPatient);
-    }
-
-    private User createAndSaveUser(CreatePatientRequest.UserRequest request) {
+    private User createAndSaveUser(CreateUserRequest request) {
         User user = new User();
-        user.setUsername(requestUser.getUsername());
-        user.setPassword(passwordEncoder.encode(requestUser.getPassword()));
+        user.setUsername(request.getUsername());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         return userRepository.save(user);
     }
 
@@ -107,34 +84,34 @@ public class PatientServiceImpl implements PatientService {
         return patient;
     }
 
-    private Address createObjectAddress(CreatePatientRequest request) {
+    private Address createObjectAddress(Address addressRequest) {
         Address address = new Address();
-        address.setCity(request.getAddress().getCity());
-        address.setPostalCode(request.getAddress().getPostalCode());
-        address.setStreet(request.getAddress().getStreet());
+        address.setCity(addressRequest.getCity());
+        address.setPostalCode(addressRequest.getPostalCode());
+        address.setStreet(addressRequest.getStreet());
 
         return address;
     }
 
     private void validateUniqueness(String username, String nik, String phone) {
-        userRepository.findByUsername(username).ifPresent(value -> {
+        userRepository.findByUsernameEquals(username).ifPresent(value -> {
             log.warn("Patient created failed. Username {} is already exists.", value.getUsername());
             throw new IllegalArgumentException("Username " + value.getUsername() + " is already taken.");
         });
 
-        patientRepository.findByNik(nik).ifPresent(value -> {
+        patientRepository.findByNikEquals(nik).ifPresent(value -> {
             log.warn("Patient created failed. NIK {} is already exists.", value.getNik());
             throw new IllegalArgumentException("NIK " + value.getNik() + " is already taken.");
         });
 
-        patientRepository.findByPhone(phone).ifPresent(value -> {
+        patientRepository.findByPhoneEquals(phone).ifPresent(value -> {
             log.warn("Patient created failed. Phone {} is already exists.", value.getPhone());
             throw new IllegalArgumentException("Phone " + value.getPhone() + " is already taken.");
         });
     }
 
-    private CreatePatientResponse convertToPatientResponse(Patient patient) {
-        return new CreatePatientResponse(
+    private PatientResponse convertToPatientResponse(Patient patient) {
+        return new PatientResponse(
                 patient.getId(),
                 patient.getFullName(),
                 patient.getNik(),

@@ -20,6 +20,8 @@ public class CreatePatientRequest {
 
     private Address address;
 
+    private CreateUserRequest user;
+
     @NotBlank(message = "{patient.fullname.notblank}")
     @Size(min = 3, message = "{patient.fullname.size}")
     private String fullName;
@@ -31,7 +33,7 @@ public class CreatePatientRequest {
     @NotNull(message = "{patient.dateOfBirth.notnull}")
     private LocalDate dateOfBirth;
 
-    @NotBlank(message = "{patient.age.notblank}")
+    @NotNull(message = "{patient.age.notnull}")
     @Min(value = 0, message = "{patient.age.min}")
     @Max(value = 999, message = "{patient.age.max}")
     private Integer age;
@@ -52,12 +54,12 @@ public class CreatePatientRequest {
     @Size(min = 3, message = "{patient.placeofbirth.size}")
     private String placeOfBirth;
 
-    @NotBlank(message = "{patient.weight.notblank}")
+    @NotNull(message = "{patient.weight.notnull}")
     @Min(value = 0, message = "{patient.weight.min}")
     @Max(value = 999, message = "{patient.weight.max}")
     private Integer weight;
 
-    @NotBlank(message = "{patient.height.notblank}")
+    @NotNull(message = "{patient.height.notnull}")
     @Min(value = 0, message = "{patient.height.min}")
     @Max(value = 999, message = "{patient.height.max}")
     private Integer height;

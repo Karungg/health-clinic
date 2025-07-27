@@ -11,7 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RestController;
 
 import healthclinic.health_clinic.dto.CreatePatientRequest;
-import healthclinic.health_clinic.dto.CreatePatientResponse;
+import healthclinic.health_clinic.dto.PatientResponse;
 import healthclinic.health_clinic.services.PatientService;
 import jakarta.validation.Valid;
 
@@ -28,7 +28,7 @@ public class PatientController {
     private PatientService patientService;
 
     @GetMapping(path = "/api/patients", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<CreatePatientResponse>> getPatients() {
+    public ResponseEntity<List<PatientResponse>> getPatients() {
         return ResponseEntity.ok().body(patientService.findAllPatients());
     }
 
@@ -41,7 +41,7 @@ public class PatientController {
             return ResponseEntity.badRequest().body(errors.toString());
         }
 
-        CreatePatientResponse response = patientService.createPatient(request);
+        PatientResponse response = patientService.createPatient(request);
 
         return ResponseEntity.ok().body("Patient with name " + response.getFullName() + " successfully created.");
     }

@@ -12,5 +12,4 @@ public interface PatientService {
     PatientResponse createPatient(CreatePatientRequest request);
 
     PatientResponse updatePatient(CreatePatientRequest request, UUID patientId);
-
 }
