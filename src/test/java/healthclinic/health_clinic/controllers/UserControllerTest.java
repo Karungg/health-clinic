@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import healthclinic.health_clinic.models.User;
 import healthclinic.health_clinic.repository.UserRepository;
@@ -22,6 +23,7 @@ import org.hamcrest.Matchers;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public class UserControllerTest {
 
         @Autowired
@@ -32,15 +34,10 @@ public class UserControllerTest {
 
         @BeforeEach
         void setUp() {
-                userRepository.deleteAll();
-        }
-
-        private void addUser(String username, String password) throws Exception {
-                mockMvc.perform(
-                                post("/api/users")
-                                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                                                .param("username", username)
-                                                .param("password", password));
+                User initialUser = new User();
+                initialUser.setUsername("user 1");
+                initialUser.setPassword("password");
+                userRepository.save(initialUser);
         }
 
         @Test
@@ -65,25 +62,21 @@ public class UserControllerTest {
 
         @Test
         void createUserErrorUniqueUsername() throws Exception {
-                addUser("user 2", "password");
-
                 mockMvc.perform(
                                 post("/api/users")
                                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                                                .param("username", "user 2")
+                                                .param("username", "user 1")
                                                 .param("password", "password"))
                                 .andExpect(status().isBadRequest())
                                 .andExpect(result -> assertTrue(
                                                 result.getResolvedException() instanceof IllegalArgumentException))
-                                .andExpect(result -> assertEquals("Username user 2 is already taken.",
+                                .andExpect(result -> assertEquals("Username user 1 is already taken.",
                                                 result.getResolvedException().getMessage()));
         }
 
         @Test
         void updateUserSuccess() throws Exception {
-                addUser("user 3", "password");
-
-                User user = userRepository.findByUsernameEquals("user 3").orElse(null);
+                User user = userRepository.findByUsernameEquals("user 1").orElse(null);
 
                 mockMvc.perform(
                                 put("/api/users/" + user.getId() + "/edit")
@@ -100,8 +93,10 @@ public class UserControllerTest {
 
         @Test
         void updateUserError() throws Exception {
-                addUser("user 1", "password");
-                addUser("user 3", "password");
+                User newUser = new User();
+                newUser.setUsername("user 3");
+                newUser.setPassword("password");
+                userRepository.save(newUser);
 
                 User user = userRepository.findByUsernameEquals("user 3").orElse(null);
 
@@ -117,8 +112,6 @@ public class UserControllerTest {
 
         @Test
         void deleteUserSuccess() throws Exception {
-                addUser("user 1", "password");
-
                 User user = userRepository.findByUsernameEquals("user 1").orElse(null);
 
                 mockMvc.perform(
