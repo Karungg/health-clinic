@@ -4,11 +4,13 @@ import java.time.Instant;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 @AllArgsConstructor
-public class CreateUserResponse {
+public class UserResponse {
     private UUID id;
 
     private String username;

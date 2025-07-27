@@ -11,7 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RestController;
 
 import healthclinic.health_clinic.dto.CreateUserRequest;
-import healthclinic.health_clinic.dto.CreateUserResponse;
+import healthclinic.health_clinic.dto.UserResponse;
 import healthclinic.health_clinic.services.UserService;
 import jakarta.validation.Valid;
 
@@ -29,7 +29,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping(path = "/api/users", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<CreateUserResponse>> getUsers() {
+    public ResponseEntity<List<UserResponse>> getUsers() {
         return ResponseEntity.ok().body(userService.findAllUsers());
     }
 
@@ -42,7 +42,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(errors.toString());
         }
 
-        CreateUserResponse response = userService.createUser(request);
+        UserResponse response = userService.createUser(request);
 
         return ResponseEntity.ok().body("User with username " + response.getUsername() + " successfully created");
     }
@@ -57,7 +57,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(errors.toString());
         }
 
-        CreateUserResponse response = userService.updateUser(userId, request);
+        UserResponse response = userService.updateUser(userId, request);
 
         return ResponseEntity.ok().body("User with username " + response.getUsername() + " successfully updated");
     }

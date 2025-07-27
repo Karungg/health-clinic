@@ -4,14 +4,14 @@ import java.util.List;
 import java.util.UUID;
 
 import healthclinic.health_clinic.dto.CreateUserRequest;
-import healthclinic.health_clinic.dto.CreateUserResponse;
+import healthclinic.health_clinic.dto.UserResponse;
 
 public interface UserService {
-    List<CreateUserResponse> findAllUsers();
+    List<UserResponse> findAllUsers();
 
-    CreateUserResponse createUser(CreateUserRequest request);
+    UserResponse createUser(CreateUserRequest request);
 
-    CreateUserResponse updateUser(UUID userId, CreateUserRequest request);
+    UserResponse updateUser(UUID userId, CreateUserRequest request);
 
     void deleteUser(UUID userId);
 }

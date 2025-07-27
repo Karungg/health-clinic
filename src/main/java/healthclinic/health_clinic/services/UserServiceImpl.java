@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import healthclinic.health_clinic.dto.CreateUserRequest;
-import healthclinic.health_clinic.dto.CreateUserResponse;
+import healthclinic.health_clinic.dto.UserResponse;
 import healthclinic.health_clinic.exception.ResourceNotFoundException;
 import healthclinic.health_clinic.models.User;
 import healthclinic.health_clinic.repository.UserRepository;
@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
-    public List<CreateUserResponse> findAllUsers() {
+    public List<UserResponse> findAllUsers() {
         return userRepository.findAll()
                 .stream()
                 .map(this::convertToUserResponse)
@@ -35,10 +35,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
-    public CreateUserResponse createUser(CreateUserRequest request) {
+    public UserResponse createUser(CreateUserRequest request) {
         log.info("Attempting to create user with username {}", request.getUsername());
 
-        userRepository.findByUsername(request.getUsername()).ifPresent(u -> {
+        userRepository.findByUsernameEquals(request.getUsername()).ifPresent(u -> {
             log.warn("User creation failed. Username {} already exists.", u.getUsername());
             throw new IllegalArgumentException("Username " + request.getUsername() + " is already taken.");
         });
@@ -54,15 +54,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
-    public CreateUserResponse updateUser(UUID userId, CreateUserRequest request) {
+    public UserResponse updateUser(UUID userId, CreateUserRequest request) {
         log.info("Attempting to update user with username {}", request.getUsername());
+
+        User user = userRepository.findByIdEquals(userId).orElseThrow(() -> {
+            log.warn("Updated failed. User with ID {} not found", userId);
+            throw new ResourceNotFoundException("User with ID " + userId + " not found");
+        });
 
         if (userRepository.existsByUsernameAndIdNot(request.getUsername(), userId)) {
             log.warn("User updated failed. Username {} already exists.", request.getUsername());
             throw new IllegalArgumentException("Username " + request.getUsername() + " is already taken.");
         }
 
-        User user = userRepository.findByIdEquals(userId).orElse(null);
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
@@ -85,8 +89,8 @@ public class UserServiceImpl implements UserService {
         log.info("User with id {} successfully deleted.", userId);
     }
 
-    private CreateUserResponse convertToUserResponse(User user) {
-        return new CreateUserResponse(
+    private UserResponse convertToUserResponse(User user) {
+        return new UserResponse(
                 user.getId(),
                 user.getUsername(),
                 user.getPassword(),

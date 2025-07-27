@@ -10,7 +10,7 @@ import healthclinic.health_clinic.models.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
-    Optional<User> findByUsername(String username);
+    Optional<User> findByUsernameEquals(String username);
 
     Optional<User> findByIdEquals(UUID id);
 

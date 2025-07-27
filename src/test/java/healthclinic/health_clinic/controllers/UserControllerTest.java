@@ -83,7 +83,7 @@ public class UserControllerTest {
         void updateUserSuccess() throws Exception {
                 addUser("user 3", "password");
 
-                User user = userRepository.findByUsername("user 3").orElse(null);
+                User user = userRepository.findByUsernameEquals("user 3").orElse(null);
 
                 mockMvc.perform(
                                 put("/api/users/" + user.getId() + "/edit")
@@ -94,7 +94,7 @@ public class UserControllerTest {
                                 .andExpect(content().string(Matchers.containsString(
                                                 "User with username user 4 successfully updated")));
 
-                user = userRepository.findByUsername("user 4").orElse(null);
+                user = userRepository.findByUsernameEquals("user 4").orElse(null);
                 assertNotNull(user);
         }
 
@@ -103,7 +103,7 @@ public class UserControllerTest {
                 addUser("user 1", "password");
                 addUser("user 3", "password");
 
-                User user = userRepository.findByUsername("user 3").orElse(null);
+                User user = userRepository.findByUsernameEquals("user 3").orElse(null);
 
                 mockMvc.perform(
                                 put("/api/users/" + user.getId() + "/edit")
@@ -119,13 +119,13 @@ public class UserControllerTest {
         void deleteUserSuccess() throws Exception {
                 addUser("user 1", "password");
 
-                User user = userRepository.findByUsername("user 1").orElse(null);
+                User user = userRepository.findByUsernameEquals("user 1").orElse(null);
 
                 mockMvc.perform(
                                 delete("/api/users/" + user.getId() + "/delete"))
                                 .andExpect(status().isNoContent());
 
-                user = userRepository.findByUsername("user 1").orElse(null);
+                user = userRepository.findByUsernameEquals("user 1").orElse(null);
                 assertNull(user);
         }
 

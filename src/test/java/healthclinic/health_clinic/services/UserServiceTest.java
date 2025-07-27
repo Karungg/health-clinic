@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import healthclinic.health_clinic.dto.CreateUserRequest;
-import healthclinic.health_clinic.dto.CreateUserResponse;
+import healthclinic.health_clinic.dto.UserResponse;
 import healthclinic.health_clinic.models.User;
 import healthclinic.health_clinic.repository.UserRepository;
 
@@ -31,8 +31,8 @@ public class UserServiceTest {
         request.setUsername("user 1");
         request.setPassword("password");
 
-        CreateUserResponse user = userService.createUser(request);
-        User userFromRepo = userRepository.findByUsername("user 1").orElse(null);
+        UserResponse user = userService.createUser(request);
+        User userFromRepo = userRepository.findByUsernameEquals("user 1").orElse(null);
 
         Assertions.assertThat(user.getId()).isEqualTo(userFromRepo.getId());
     }
