@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import healthclinic.health_clinic.Enums.Role;
 import healthclinic.health_clinic.models.User;
 import healthclinic.health_clinic.repository.UserRepository;
 
@@ -37,6 +38,7 @@ public class UserControllerTest {
                 User initialUser = new User();
                 initialUser.setUsername("user 1");
                 initialUser.setPassword("password");
+                initialUser.setRole(Role.ROLE_ADMIN);
                 userRepository.save(initialUser);
         }
 
@@ -96,6 +98,7 @@ public class UserControllerTest {
                 User newUser = new User();
                 newUser.setUsername("user 3");
                 newUser.setPassword("password");
+                newUser.setRole(Role.ROLE_ADMIN);
                 userRepository.save(newUser);
 
                 User user = userRepository.findByUsernameEquals("user 3").orElse(null);

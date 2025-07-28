@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import healthclinic.health_clinic.Enums.Role;
 import healthclinic.health_clinic.dto.CreateUserRequest;
 import healthclinic.health_clinic.dto.UserResponse;
 import healthclinic.health_clinic.exception.ResourceNotFoundException;
@@ -45,6 +46,7 @@ public class UserServiceImpl implements UserService {
 
         User user = new User();
         user.setUsername(request.getUsername());
+        user.setRole(Role.ROLE_ADMIN);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         User savedUser = userRepository.save(user);
@@ -94,6 +96,7 @@ public class UserServiceImpl implements UserService {
                 user.getId(),
                 user.getUsername(),
                 user.getPassword(),
+                user.getRole(),
                 user.getCreatedAt(),
                 user.getUpdatedAt());
     }

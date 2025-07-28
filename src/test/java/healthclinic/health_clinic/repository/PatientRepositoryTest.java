@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import healthclinic.health_clinic.Enums.Role;
 import healthclinic.health_clinic.dto.Address;
 import healthclinic.health_clinic.models.Patient;
 import healthclinic.health_clinic.models.User;
@@ -34,6 +35,7 @@ public class PatientRepositoryTest {
         User user = new User();
         user.setUsername("User 1");
         user.setPassword("password");
+        user.setRole(Role.ROLE_PATIENT);
 
         userRepository.save(user);
 

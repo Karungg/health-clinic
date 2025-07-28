@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import healthclinic.health_clinic.Enums.Role;
 import healthclinic.health_clinic.dto.Address;
 import healthclinic.health_clinic.dto.CreatePatientRequest;
 import healthclinic.health_clinic.dto.CreateUserRequest;
@@ -100,6 +101,7 @@ public class PatientServiceImpl implements PatientService {
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(Role.ROLE_PATIENT);
         return userRepository.save(user);
     }
 

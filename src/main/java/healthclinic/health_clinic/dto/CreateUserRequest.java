@@ -16,5 +16,4 @@ public class CreateUserRequest {
     @NotBlank(message = "{user.password.notblank}")
     @Size(min = 3, message = "{user.password.size}")
     private String password;
-
 }
