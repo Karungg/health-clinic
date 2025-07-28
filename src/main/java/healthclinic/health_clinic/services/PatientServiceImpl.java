@@ -44,7 +44,7 @@ public class PatientServiceImpl implements PatientService {
 
     @Transactional
     public PatientResponse createPatient(CreatePatientRequest request) {
-        log.info("Attempting to create patient with fullName {}", request.getFullName());
+        log.info("Attempting to create patient with full name {}", request.getFullName());
 
         validateUniqueness(request.getUser().getUsername(), request.getNik(), request.getPhone());
 
@@ -55,7 +55,9 @@ public class PatientServiceImpl implements PatientService {
 
         patient.setAddress(address);
         patient.setUser(savedUser);
+
         Patient savedPatient = patientRepository.save(patient);
+        log.info("Patient with full name {} successfully created", savedPatient.getFullName());
 
         return convertToPatientResponse(savedPatient);
     }

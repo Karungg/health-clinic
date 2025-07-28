@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDate;
 
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @SpringBootTest
@@ -23,6 +24,43 @@ public class PatientControllerTest {
         @Autowired
         private MockMvc mockMvc;
 
+        private String fullName;
+        private String nik;
+        private LocalDate dateOfBirth;
+        private Integer age;
+        private Integer weight;
+        private Integer height;
+        private String gender;
+        private String job;
+        private String placeOfBirth;
+        private String bloodType;
+        private String phone;
+        private String street;
+        private String city;
+        private String postalCode;
+        private String username;
+        private String password;
+
+        @BeforeEach
+        void setUp() {
+                fullName = "Budi";
+                nik = "3271052711040001";
+                dateOfBirth = LocalDate.of(2004, 11, 27);
+                age = 20;
+                weight = 65;
+                height = 172;
+                gender = "Pria";
+                job = "Mahasiswa";
+                placeOfBirth = "Bogor";
+                bloodType = "O";
+                phone = "081234567890";
+                street = "Jl. Dramaga Raya No. 10";
+                city = "Bogor";
+                postalCode = "16680";
+                username = "budi";
+                password = "password";
+        }
+
         @Test
         void getPatients() throws Exception {
                 mockMvc.perform(get("/api/patients"))
@@ -32,37 +70,65 @@ public class PatientControllerTest {
 
         @Test
         void createPatientSuccess() throws Exception {
-                String fullName = "Pasien 1";
-                LocalDate dateOfBirth = LocalDate.of(2004, 11, 27);
-
                 mockMvc.perform(
                                 post("/api/patients")
                                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                                                 .accept(MediaType.APPLICATION_JSON_VALUE)
 
                                                 .param("fullName", fullName)
-                                                .param("nik", "1234567890123456")
+                                                .param("nik", nik)
                                                 .param("dateOfBirth", dateOfBirth.toString())
-                                                .param("age", "20")
-                                                .param("gender", "Pria")
-                                                .param("job", "Programmer")
-                                                .param("placeOfBirth", "Bogor")
-                                                .param("weight", "55")
-                                                .param("height", "166")
-                                                .param("bloodType", "O")
-                                                .param("phone", "81234567890")
+                                                .param("age", age.toString())
+                                                .param("gender", gender)
+                                                .param("job", job)
+                                                .param("placeOfBirth", placeOfBirth)
+                                                .param("weight", weight.toString())
+                                                .param("height", height.toString())
+                                                .param("bloodType", bloodType)
+                                                .param("phone", phone)
 
-                                                .param("address.street", "Dramaga")
-                                                .param("address.city", "Bogor")
-                                                .param("address.postalCode", "16116")
+                                                .param("address.street", street)
+                                                .param("address.city", city)
+                                                .param("address.postalCode", postalCode)
 
-                                                .param("user.username", "user 1")
-                                                .param("user.password", "password"))
+                                                .param("user.username", username)
+                                                .param("user.password", password))
                                 .andExpectAll(
                                                 status().isOk(),
                                                 content().string(Matchers.containsString(
                                                                 "Patient with name " + fullName
                                                                                 + " successfully created.")));
+        }
+
+        @Test
+        void createPatientError() throws Exception {
+                mockMvc.perform(
+                                post("/api/patients")
+                                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                                                .accept(MediaType.APPLICATION_JSON_VALUE)
+
+                                                // Full name is null
+                                                .param("nik", nik)
+                                                .param("dateOfBirth", dateOfBirth.toString())
+                                                .param("age", age.toString())
+                                                .param("gender", gender)
+                                                .param("job", job)
+                                                .param("placeOfBirth", placeOfBirth)
+                                                .param("weight", weight.toString())
+                                                .param("height", height.toString())
+                                                .param("bloodType", bloodType)
+                                                .param("phone", phone)
+
+                                                .param("address.street", street)
+                                                .param("address.city", city)
+                                                .param("address.postalCode", postalCode)
+
+                                                .param("user.username", username)
+                                                .param("user.password", password))
+                                .andExpectAll(
+                                                status().isBadRequest(),
+                                                content().string(Matchers.containsString(
+                                                                "Nama lengkap harus diisi")));
         }
 
 }

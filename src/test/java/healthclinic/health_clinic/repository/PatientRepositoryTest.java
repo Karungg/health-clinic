@@ -2,7 +2,6 @@ package healthclinic.health_clinic.repository;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
