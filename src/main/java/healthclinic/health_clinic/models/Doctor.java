@@ -58,8 +58,8 @@ public class Doctor {
     @Column(name = "place_of_birth", nullable = false)
     private String placeOfBirth;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "user_id", nullable = false)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "user_id", nullable = false, unique = true, referencedColumnName = "id")
     private User user;
 
     @CreatedDate
