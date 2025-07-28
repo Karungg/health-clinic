@@ -7,6 +7,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import healthclinic.health_clinic.models.Patient;
+import healthclinic.health_clinic.repository.PatientRepository;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -23,6 +26,9 @@ public class PatientControllerTest {
 
         @Autowired
         private MockMvc mockMvc;
+
+        @Autowired
+        private PatientRepository patientRepository;
 
         private String fullName;
         private String nik;
@@ -129,6 +135,82 @@ public class PatientControllerTest {
                                                 status().isBadRequest(),
                                                 content().string(Matchers.containsString(
                                                                 "Nama lengkap harus diisi")));
+        }
+
+        @Test
+        void updatePatientSuccess() throws Exception {
+                mockMvc.perform(
+                                post("/api/patients")
+                                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                                                .accept(MediaType.APPLICATION_JSON_VALUE)
+
+                                                .param("fullName", fullName)
+                                                .param("nik", nik)
+                                                .param("dateOfBirth", dateOfBirth.toString())
+                                                .param("age", age.toString())
+                                                .param("gender", gender)
+                                                .param("job", job)
+                                                .param("placeOfBirth", placeOfBirth)
+                                                .param("weight", weight.toString())
+                                                .param("height", height.toString())
+                                                .param("bloodType", bloodType)
+                                                .param("phone", phone)
+
+                                                .param("address.street", street)
+                                                .param("address.city", city)
+                                                .param("address.postalCode", postalCode)
+
+                                                .param("user.username", username)
+                                                .param("user.password", password));
+
+                Patient patient = patientRepository.findByNikEquals(nik).orElse(null);
+
+                // Update data
+                fullName = "Miftah";
+                nik = "3271052711040002";
+                dateOfBirth = LocalDate.of(2005, 12, 30);
+                age = 30;
+                weight = 60;
+                height = 170;
+                gender = "Pria";
+                job = "Mahasiswa";
+                placeOfBirth = "Jakarta";
+                bloodType = "A";
+                phone = "081234567891";
+                street = "Jl. Ciherang";
+                city = "Jakarta";
+                postalCode = "16112";
+                username = "miftah";
+                password = "password";
+
+                mockMvc.perform(
+                                put("/api/patients/" + patient.getId() + "/edit")
+                                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                                                .accept(MediaType.APPLICATION_JSON_VALUE)
+
+                                                .param("fullName", fullName)
+                                                .param("nik", nik)
+                                                .param("dateOfBirth", dateOfBirth.toString())
+                                                .param("age", age.toString())
+                                                .param("gender", gender)
+                                                .param("job", job)
+                                                .param("placeOfBirth", placeOfBirth)
+                                                .param("weight", weight.toString())
+                                                .param("height", height.toString())
+                                                .param("bloodType", bloodType)
+                                                .param("phone", phone)
+
+                                                .param("address.street", street)
+                                                .param("address.city", city)
+                                                .param("address.postalCode", postalCode)
+
+                                                .param("user.username", username)
+                                                .param("user.password", password))
+                                .andExpectAll(
+                                                status().isOk(),
+                                                content().string(Matchers.containsString(
+                                                                "Patient with name " + fullName
+                                                                                + " successfully updated.")));
         }
 
 }

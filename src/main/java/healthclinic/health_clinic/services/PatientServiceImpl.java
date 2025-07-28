@@ -1,7 +1,6 @@
 package healthclinic.health_clinic.services;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -62,6 +61,32 @@ public class PatientServiceImpl implements PatientService {
         return convertToPatientResponse(savedPatient);
     }
 
+    @Transactional
+    public PatientResponse updatePatient(CreatePatientRequest request, UUID patientId) {
+        log.info("Attempting to update patient with full name {}", request.getFullName());
+
+        Patient patientToUpdate = patientRepository.findById(patientId).orElseThrow(() -> {
+            log.warn("Failed to update. Patient with ID {} not found", patientId);
+            throw new ResourceNotFoundException("Patient with ID " + patientId + " not found");
+        });
+
+        validateUniquenessForUpdate(request, patientToUpdate.getUser().getId(), patientToUpdate.getId());
+
+        mapDtoToEntity(request, patientToUpdate);
+
+        User userToUpdate = patientToUpdate.getUser();
+        userToUpdate.setUsername(request.getUser().getUsername());
+        if (userToUpdate.getPassword() != null && !request.getUser().getPassword().isEmpty()) {
+            userToUpdate.setPassword(passwordEncoder.encode(request.getUser().getPassword()));
+        }
+
+        Patient updatedPatient = patientRepository.save(patientToUpdate);
+        log.info("Patient with ID {} successfully updated", updatedPatient.getId());
+
+        return convertToPatientResponse(updatedPatient);
+
+    }
+
     private User createAndSaveUser(CreateUserRequest request) {
         User user = new User();
         user.setUsername(request.getUsername());
@@ -110,6 +135,44 @@ public class PatientServiceImpl implements PatientService {
             log.warn("Patient created failed. Phone {} is already exists.", value.getPhone());
             throw new IllegalArgumentException("Phone " + value.getPhone() + " is already taken.");
         });
+    }
+
+    private void validateUniquenessForUpdate(CreatePatientRequest request, UUID userId, UUID patientId) {
+        if (userRepository.existsByUsernameAndIdNot(request.getUser().getUsername(), userId)) {
+            log.warn("Failed to update patient, username {} is already exists", request.getUser().getUsername());
+            throw new IllegalArgumentException("Username " + request.getUser().getUsername() + " is already taken.");
+        }
+
+        if (patientRepository.existsByNikAndIdNot(request.getNik(), patientId)) {
+            log.warn("Failed to update patient, nik {} is already exists", request.getNik());
+            throw new IllegalArgumentException("nik " + request.getNik() + " is already taken.");
+        }
+
+        if (patientRepository.existsByPhoneAndIdNot(request.getPhone(), patientId)) {
+            log.warn("Failed to update patient, phone {} is already exists", request.getPhone());
+            throw new IllegalArgumentException("phone " + request.getPhone() + " is already taken.");
+        }
+    }
+
+    private void mapDtoToEntity(CreatePatientRequest request, Patient patientToUpdate) {
+        patientToUpdate.setFullName(request.getFullName());
+        patientToUpdate.setNik(request.getNik());
+        patientToUpdate.setDateOfBirth(request.getDateOfBirth());
+        patientToUpdate.setAge(request.getAge());
+        patientToUpdate.setPhone(request.getPhone());
+        patientToUpdate.setGender(request.getGender());
+        patientToUpdate.setJob(request.getJob());
+        patientToUpdate.setPlaceOfBirth(request.getPlaceOfBirth());
+        patientToUpdate.setWeight(request.getWeight());
+        patientToUpdate.setHeight(request.getHeight());
+        patientToUpdate.setBloodType(request.getBloodType());
+
+        Address address = new Address();
+        address.setCity(request.getAddress().getCity());
+        address.setStreet(request.getAddress().getStreet());
+        address.setPostalCode(request.getAddress().getPostalCode());
+
+        patientToUpdate.setAddress(address);
     }
 
     private PatientResponse convertToPatientResponse(Patient patient) {

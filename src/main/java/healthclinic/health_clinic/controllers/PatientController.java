@@ -55,7 +55,9 @@ public class PatientController {
             return ResponseEntity.badRequest().body(errors.toString());
         }
 
-        return ResponseEntity.ok().body("Patient with name " + request.getFullName() + " successfully updated.");
+        PatientResponse response = patientService.updatePatient(request, patientId);
+
+        return ResponseEntity.ok().body("Patient with name " + response.getFullName() + " successfully updated.");
     }
 
 }
