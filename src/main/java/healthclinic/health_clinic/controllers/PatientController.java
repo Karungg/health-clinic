@@ -14,6 +14,7 @@ import healthclinic.health_clinic.dto.CreatePatientRequest;
 import healthclinic.health_clinic.dto.PatientResponse;
 import healthclinic.health_clinic.services.PatientService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+@Slf4j
 @RestController
 public class PatientController {
 
@@ -39,6 +41,8 @@ public class PatientController {
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getAllErrors().stream().map(value -> value.getDefaultMessage())
                     .toList();
+
+            log.info("Request failed with errors : " + errors.toString());
             return ResponseEntity.badRequest().body(errors.toString());
         }
 

@@ -14,6 +14,7 @@ import healthclinic.health_clinic.dto.CreateUserRequest;
 import healthclinic.health_clinic.dto.UserResponse;
 import healthclinic.health_clinic.services.UserService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
+@Slf4j
 @RestController
 public class UserController {
 
@@ -39,6 +41,8 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getAllErrors().stream().map(v -> v.getDefaultMessage())
                     .collect(Collectors.toList());
+
+            log.info("Request failed with errors : " + errors.toString());
             return ResponseEntity.badRequest().body(errors.toString());
         }
 
@@ -54,6 +58,8 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getAllErrors().stream().map(v -> v.getDefaultMessage())
                     .collect(Collectors.toList());
+
+            log.info("@PutMapping(updateUser) Request failed with errors : " + errors.toString());
             return ResponseEntity.badRequest().body(errors.toString());
         }
 
