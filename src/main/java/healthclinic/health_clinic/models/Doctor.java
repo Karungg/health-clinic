@@ -16,18 +16,18 @@ import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
-import jakarta.persistence.GenerationType;
 
 @EntityListeners({ AuditingEntityListener.class })
 @Entity
 @Table(name = "patients")
 @Data
-public class Patient {
+public class Doctor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -36,8 +36,8 @@ public class Patient {
     @Column(name = "full_name", nullable = false)
     private String fullName;
 
-    @Column(name = "nik", nullable = false, unique = true)
-    private String nik;
+    @Column(name = "sip", nullable = false, unique = true)
+    private String sip;
 
     @Column(name = "date_of_birth", nullable = false)
     private LocalDate dateOfBirth;
@@ -55,23 +55,11 @@ public class Patient {
     @Column(name = "gender", nullable = false)
     private String gender;
 
-    @Column(name = "job", nullable = false)
-    private String job;
-
     @Column(name = "place_of_birth", nullable = false)
     private String placeOfBirth;
 
-    @Column(name = "weight", nullable = false)
-    private Integer weight;
-
-    @Column(name = "height", nullable = false)
-    private Integer height;
-
-    @Column(name = "blood_type", nullable = false, length = 2)
-    private String bloodType;
-
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id", unique = true)
+    @OneToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @CreatedDate
@@ -81,4 +69,5 @@ public class Patient {
     @LastModifiedDate
     @Column(name = "updated_at")
     private Instant updatedAt;
+
 }
