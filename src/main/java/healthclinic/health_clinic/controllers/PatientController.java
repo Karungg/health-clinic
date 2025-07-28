@@ -15,6 +15,7 @@ import healthclinic.health_clinic.dto.PatientResponse;
 import healthclinic.health_clinic.services.PatientService;
 import jakarta.validation.Valid;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -58,6 +59,13 @@ public class PatientController {
         PatientResponse response = patientService.updatePatient(request, patientId);
 
         return ResponseEntity.ok().body("Patient with name " + response.getFullName() + " successfully updated.");
+    }
+
+    @DeleteMapping(path = "/api/patients/{patientId}/delete", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> deletePatient(@PathVariable(name = "patientId", required = true) UUID patientId) {
+        patientService.deletePatient(patientId);
+
+        return ResponseEntity.noContent().build();
     }
 
 }

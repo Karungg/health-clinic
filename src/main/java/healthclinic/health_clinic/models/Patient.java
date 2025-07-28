@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import healthclinic.health_clinic.converter.AddressAttributeConverter;
 import healthclinic.health_clinic.dto.Address;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -69,7 +70,7 @@ public class Patient {
     @Column(name = "blood_type", nullable = false, length = 2)
     private String bloodType;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 

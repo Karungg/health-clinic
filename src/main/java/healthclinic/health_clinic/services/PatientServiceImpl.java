@@ -84,7 +84,16 @@ public class PatientServiceImpl implements PatientService {
         log.info("Patient with ID {} successfully updated", updatedPatient.getId());
 
         return convertToPatientResponse(updatedPatient);
+    }
 
+    @Transactional
+    public void deletePatient(UUID patientId) {
+        patientRepository.findById(patientId).orElseThrow(() -> {
+            log.warn("Failed to delete. Patient with ID {} not found", patientId);
+            throw new ResourceNotFoundException("Patient with ID " + patientId + " not found");
+        });
+
+        patientRepository.deleteById(patientId);
     }
 
     private User createAndSaveUser(CreateUserRequest request) {

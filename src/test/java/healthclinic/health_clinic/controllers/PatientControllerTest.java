@@ -213,4 +213,39 @@ public class PatientControllerTest {
                                                                                 + " successfully updated.")));
         }
 
+        @Test
+        void deletePatientSuccess() throws Exception {
+                mockMvc.perform(
+                                post("/api/patients")
+                                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                                                .accept(MediaType.APPLICATION_JSON_VALUE)
+
+                                                .param("fullName", fullName)
+                                                .param("nik", nik)
+                                                .param("dateOfBirth", dateOfBirth.toString())
+                                                .param("age", age.toString())
+                                                .param("gender", gender)
+                                                .param("job", job)
+                                                .param("placeOfBirth", placeOfBirth)
+                                                .param("weight", weight.toString())
+                                                .param("height", height.toString())
+                                                .param("bloodType", bloodType)
+                                                .param("phone", phone)
+
+                                                .param("address.street", street)
+                                                .param("address.city", city)
+                                                .param("address.postalCode", postalCode)
+
+                                                .param("user.username", username)
+                                                .param("user.password", password));
+
+                Patient patient = patientRepository.findByNikEquals(nik).orElse(null);
+
+                mockMvc.perform(
+                                delete("/api/patients/" + patient.getId() + "/delete")
+                                                .accept(MediaType.APPLICATION_JSON_VALUE))
+                                .andExpectAll(
+                                                status().isNoContent());
+        }
+
 }
