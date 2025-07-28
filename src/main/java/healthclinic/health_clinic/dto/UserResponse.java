@@ -16,8 +16,6 @@ public class UserResponse {
 
     private String username;
 
-    private String password;
-
     private Role role;
 
     private Instant createdAt;

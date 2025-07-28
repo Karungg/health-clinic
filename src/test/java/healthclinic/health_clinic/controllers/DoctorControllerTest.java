@@ -2,6 +2,7 @@ package healthclinic.health_clinic.controllers;
 
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,6 +58,32 @@ public class DoctorControllerTest {
         mockMvc.perform(get("/api/doctors"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(Matchers.containsString("[]")));
+    }
+
+    @Test
+    void createDoctorSuccess() throws Exception {
+        mockMvc.perform(
+                post("/api/doctors")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+
+                        .param("fullName", fullName)
+                        .param("sip", sip)
+                        .param("dateOfBirth", dateOfBirth.toString())
+                        .param("age", age.toString())
+                        .param("gender", gender)
+                        .param("placeOfBirth", placeOfBirth)
+                        .param("phone", phone)
+
+                        .param("address.street", street)
+                        .param("address.city", city)
+                        .param("address.postalCode", postalCode)
+
+                        .param("user.username", username)
+                        .param("user.password", password))
+                .andExpect(status().isOk())
+                .andExpect(content()
+                        .string(Matchers.containsString("Doctor with name " + fullName + " successfully created.")));
     }
 
 }

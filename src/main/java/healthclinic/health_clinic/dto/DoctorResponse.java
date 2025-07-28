@@ -33,7 +33,7 @@ public class DoctorResponse {
 
     private Address address;
 
-    private User user;
+    private UUID userId;
 
     private Instant createdAt;
 
