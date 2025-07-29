@@ -9,18 +9,20 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import healthclinic.health_clinic.Enums.Role;
+import healthclinic.health_clinic.dto.CreateUserRequest;
 import healthclinic.health_clinic.models.User;
 import healthclinic.health_clinic.repository.UserRepository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import org.hamcrest.Matchers;
+import java.util.UUID;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -33,102 +35,98 @@ public class UserControllerTest {
         @Autowired
         private UserRepository userRepository;
 
+        @Autowired
+        private ObjectMapper objectMapper;
+
+        private User initialUser;
+
         @BeforeEach
         void setUp() {
-                User initialUser = new User();
-                initialUser.setUsername("user 1");
-                initialUser.setPassword("password");
-                initialUser.setRole(Role.ROLE_ADMIN);
-                userRepository.save(initialUser);
+                User user = new User();
+                user.setUsername("user1");
+                user.setPassword("password");
+                user.setRole(Role.ROLE_ADMIN);
+                initialUser = userRepository.save(user);
         }
 
         @Test
         void getUsers() throws Exception {
-                mockMvc.perform(
-                                get("/api/users"))
+                mockMvc.perform(get("/api/users"))
                                 .andExpect(status().isOk());
         }
 
         @Test
         void createUserSuccess() throws Exception {
+                CreateUserRequest request = new CreateUserRequest("user2", "password");
+
                 mockMvc.perform(
                                 post("/api/users")
-                                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                                                .param("username", "user 2")
-                                                .param("password", "password"))
-                                .andExpect(status().isOk())
-                                .andExpect(
-                                                content().string(Matchers.containsString(
-                                                                "User with username user 2 successfully created")));
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isCreated())
+                                .andExpect(jsonPath("$.data.username").value("user2"));
         }
 
         @Test
         void createUserErrorUniqueUsername() throws Exception {
+                CreateUserRequest request = new CreateUserRequest("user1", "password");
+
                 mockMvc.perform(
                                 post("/api/users")
-                                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                                                .param("username", "user 1")
-                                                .param("password", "password"))
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .content(objectMapper.writeValueAsString(request)))
                                 .andExpect(status().isBadRequest())
                                 .andExpect(result -> assertTrue(
                                                 result.getResolvedException() instanceof IllegalArgumentException))
-                                .andExpect(result -> assertEquals("Username user 1 is already taken.",
+                                .andExpect(result -> assertEquals("Username user1 is already taken.",
                                                 result.getResolvedException().getMessage()));
         }
 
         @Test
         void updateUserSuccess() throws Exception {
-                User user = userRepository.findByUsernameEquals("user 1").orElse(null);
+                CreateUserRequest request = new CreateUserRequest("user-updated", "new-password");
 
                 mockMvc.perform(
-                                put("/api/users/" + user.getId() + "/edit")
-                                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                                                .param("username", "user 4")
-                                                .param("password", "password"))
+                                put("/api/users/" + initialUser.getId())
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .content(objectMapper.writeValueAsString(request)))
                                 .andExpect(status().isOk())
-                                .andExpect(content().string(Matchers.containsString(
-                                                "User with username user 4 successfully updated")));
+                                .andExpect(jsonPath("$.data.username").value("user-updated"));
 
-                user = userRepository.findByUsernameEquals("user 4").orElse(null);
-                assertNotNull(user);
+                User updatedUser = userRepository.findById(initialUser.getId()).orElseThrow();
+                assertEquals("user-updated", updatedUser.getUsername());
         }
 
         @Test
-        void updateUserError() throws Exception {
-                User newUser = new User();
-                newUser.setUsername("user 3");
-                newUser.setPassword("password");
-                newUser.setRole(Role.ROLE_ADMIN);
-                userRepository.save(newUser);
+        void updateUserErrorUsernameExists() throws Exception {
+                User anotherUser = new User();
+                anotherUser.setUsername("existing_user");
+                anotherUser.setPassword("password");
+                anotherUser.setRole(Role.ROLE_PATIENT);
+                userRepository.save(anotherUser);
 
-                User user = userRepository.findByUsernameEquals("user 3").orElse(null);
+                CreateUserRequest request = new CreateUserRequest("existing_user", "password");
 
                 mockMvc.perform(
-                                put("/api/users/" + user.getId() + "/edit")
-                                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                                                .param("username", "user 1")
-                                                .param("password", "password"))
-                                .andExpect(status().isBadRequest())
-                                .andExpect(content().string(Matchers.containsString(
-                                                "Username user 1 is already taken.")));
+                                put("/api/users/" + initialUser.getId())
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isBadRequest());
         }
 
         @Test
         void deleteUserSuccess() throws Exception {
-                User user = userRepository.findByUsernameEquals("user 1").orElse(null);
-
                 mockMvc.perform(
-                                delete("/api/users/" + user.getId() + "/delete"))
+                                delete("/api/users/" + initialUser.getId()))
                                 .andExpect(status().isNoContent());
 
-                user = userRepository.findByUsernameEquals("user 1").orElse(null);
-                assertNull(user);
+                assertFalse(userRepository.existsById(initialUser.getId()));
         }
 
         @Test
-        void deleteUserError() throws Exception {
+        void deleteUserErrorNotFound() throws Exception {
                 mockMvc.perform(
-                                delete("/api/users/1f1d1dae-b6fd-48ed-a0ec-0c21b97a222e/delete")) // wrong uuid
+                                delete("/api/users/" + UUID.randomUUID()))
                                 .andExpect(status().isNotFound());
         }
 }
