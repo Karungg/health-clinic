@@ -2,15 +2,14 @@ package healthclinic.health_clinic.controllers;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RestController;
 
 import healthclinic.health_clinic.dto.CreateUserRequest;
+import healthclinic.health_clinic.dto.GenericResponse;
 import healthclinic.health_clinic.dto.UserResponse;
 import healthclinic.health_clinic.services.UserService;
 import jakarta.validation.Valid;
@@ -18,10 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Slf4j
 @RestController
@@ -30,47 +29,41 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping(path = "/api/users", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<UserResponse>> getUsers() {
-        return ResponseEntity.ok().body(userService.findAllUsers());
+    @GetMapping(path = "/api/users")
+    public ResponseEntity<GenericResponse<List<UserResponse>>> getUsers() {
+
+        GenericResponse<List<UserResponse>> response = GenericResponse.ok(userService.findAllUsers());
+
+        return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping(path = "/api/users", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createUser(@ModelAttribute @Valid CreateUserRequest request,
-            BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            List<String> errors = bindingResult.getAllErrors().stream().map(v -> v.getDefaultMessage())
-                    .collect(Collectors.toList());
+    @PostMapping(path = "/api/users")
+    public ResponseEntity<GenericResponse<UserResponse>> createUser(@RequestBody @Valid CreateUserRequest request) {
 
-            log.info("Request failed with errors : " + errors.toString());
-            return ResponseEntity.badRequest().body(errors.toString());
-        }
+        UserResponse createdUser = userService.createUser(request);
 
-        UserResponse response = userService.createUser(request);
+        GenericResponse<UserResponse> response = GenericResponse.created(createdUser);
 
-        return ResponseEntity.ok().body("User with username " + response.getUsername() + " successfully created");
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PutMapping(path = "/api/users/{userId}/edit", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> updateUser(@PathVariable(name = "userId", required = true) UUID userId,
-            @ModelAttribute @Valid CreateUserRequest request,
-            BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            List<String> errors = bindingResult.getAllErrors().stream().map(v -> v.getDefaultMessage())
-                    .collect(Collectors.toList());
+    @PutMapping(path = "/api/users/{userId}")
+    public ResponseEntity<GenericResponse<UserResponse>> updateUser(
+            @PathVariable(name = "userId", required = true) UUID userId,
+            @RequestBody @Valid CreateUserRequest request) {
 
-            log.info("@PutMapping(updateUser) Request failed with errors : " + errors.toString());
-            return ResponseEntity.badRequest().body(errors.toString());
-        }
+        UserResponse updatedUser = userService.updateUser(userId, request);
 
-        UserResponse response = userService.updateUser(userId, request);
+        GenericResponse<UserResponse> response = GenericResponse.ok(updatedUser);
 
-        return ResponseEntity.ok().body("User with username " + response.getUsername() + " successfully updated");
+        return ResponseEntity.ok().body(response);
     }
 
-    @DeleteMapping(path = "/api/users/{userId}/delete", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> deleteUser(@PathVariable(name = "userId", required = true) UUID userId) {
+    @DeleteMapping(path = "/api/users/{userId}")
+    public ResponseEntity<Void> deleteUser(
+            @PathVariable(name = "userId", required = true) UUID userId) {
         userService.deleteUser(userId);
+
         return ResponseEntity.noContent().build();
     }
 }
