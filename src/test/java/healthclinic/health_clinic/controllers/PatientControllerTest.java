@@ -1,5 +1,18 @@
 package healthclinic.health_clinic.controllers;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.time.LocalDate;
+
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -7,17 +20,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import healthclinic.health_clinic.dto.Address;
+import healthclinic.health_clinic.dto.CreatePatientRequest;
+import healthclinic.health_clinic.dto.CreateUserRequest;
 import healthclinic.health_clinic.models.Patient;
 import healthclinic.health_clinic.repository.PatientRepository;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import java.time.LocalDate;
-
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -30,41 +39,38 @@ public class PatientControllerTest {
         @Autowired
         private PatientRepository patientRepository;
 
-        private String fullName;
-        private String nik;
-        private LocalDate dateOfBirth;
-        private Integer age;
-        private Integer weight;
-        private Integer height;
-        private String gender;
-        private String job;
-        private String placeOfBirth;
-        private String bloodType;
-        private String phone;
-        private String street;
-        private String city;
-        private String postalCode;
-        private String username;
-        private String password;
+        @Autowired
+        private ObjectMapper objectMapper;
+
+        private CreatePatientRequest patientRequest;
 
         @BeforeEach
         void setUp() {
-                fullName = "Budi";
-                nik = "3271052711040001";
-                dateOfBirth = LocalDate.of(2004, 11, 27);
-                age = 20;
-                weight = 65;
-                height = 172;
-                gender = "Pria";
-                job = "Mahasiswa";
-                placeOfBirth = "Bogor";
-                bloodType = "O";
-                phone = "081234567890";
-                street = "Jl. Dramaga Raya No. 10";
-                city = "Bogor";
-                postalCode = "16680";
-                username = "budi";
-                password = "password";
+                LocalDate dateOfBirth = LocalDate.of(2004, 11, 27);
+
+                Address address = new Address();
+                address.setCity("Kota");
+                address.setPostalCode("16221");
+                address.setStreet("Jalan");
+
+                CreateUserRequest user = new CreateUserRequest();
+                user.setUsername("user1");
+                user.setPassword("password");
+
+                patientRequest = new CreatePatientRequest();
+                patientRequest.setAddress(address);
+                patientRequest.setAge(20);
+                patientRequest.setBloodType("O");
+                patientRequest.setDateOfBirth(dateOfBirth);
+                patientRequest.setFullName("Pasien 1");
+                patientRequest.setGender("Pria");
+                patientRequest.setHeight(200);
+                patientRequest.setJob("Guru");
+                patientRequest.setNik("1234567890123456");
+                patientRequest.setPhone("123456789");
+                patientRequest.setPlaceOfBirth("Bogor");
+                patientRequest.setUser(user);
+                patientRequest.setWeight(90);
         }
 
         @Test
@@ -78,172 +84,58 @@ public class PatientControllerTest {
         void createPatientSuccess() throws Exception {
                 mockMvc.perform(
                                 post("/api/patients")
-                                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                                                .accept(MediaType.APPLICATION_JSON_VALUE)
-
-                                                .param("fullName", fullName)
-                                                .param("nik", nik)
-                                                .param("dateOfBirth", dateOfBirth.toString())
-                                                .param("age", age.toString())
-                                                .param("gender", gender)
-                                                .param("job", job)
-                                                .param("placeOfBirth", placeOfBirth)
-                                                .param("weight", weight.toString())
-                                                .param("height", height.toString())
-                                                .param("bloodType", bloodType)
-                                                .param("phone", phone)
-
-                                                .param("address.street", street)
-                                                .param("address.city", city)
-                                                .param("address.postalCode", postalCode)
-
-                                                .param("user.username", username)
-                                                .param("user.password", password))
+                                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                .content(objectMapper.writeValueAsString(patientRequest)))
                                 .andExpectAll(
-                                                status().isOk(),
-                                                content().string(Matchers.containsString(
-                                                                "Patient with name " + fullName
-                                                                                + " successfully created.")));
+                                                status().isCreated(),
+                                                jsonPath("$.data.fullName").value(patientRequest.getFullName()));
         }
 
         @Test
         void createPatientError() throws Exception {
+                patientRequest.setNik("");
+
                 mockMvc.perform(
                                 post("/api/patients")
-                                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                                                .accept(MediaType.APPLICATION_JSON_VALUE)
-
-                                                // Full name is null
-                                                .param("nik", nik)
-                                                .param("dateOfBirth", dateOfBirth.toString())
-                                                .param("age", age.toString())
-                                                .param("gender", gender)
-                                                .param("job", job)
-                                                .param("placeOfBirth", placeOfBirth)
-                                                .param("weight", weight.toString())
-                                                .param("height", height.toString())
-                                                .param("bloodType", bloodType)
-                                                .param("phone", phone)
-
-                                                .param("address.street", street)
-                                                .param("address.city", city)
-                                                .param("address.postalCode", postalCode)
-
-                                                .param("user.username", username)
-                                                .param("user.password", password))
+                                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                .content(objectMapper.writeValueAsString(patientRequest)))
                                 .andExpectAll(
                                                 status().isBadRequest(),
-                                                content().string(Matchers.containsString(
-                                                                "Nama lengkap harus diisi")));
+                                                jsonPath("$.errors.nik", Matchers.containsInAnyOrder("Nik harus diisi",
+                                                                "Panjang NIK harus 16 digit")));
         }
 
         @Test
         void updatePatientSuccess() throws Exception {
                 mockMvc.perform(
                                 post("/api/patients")
-                                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                                                .accept(MediaType.APPLICATION_JSON_VALUE)
+                                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                .content(objectMapper.writeValueAsString(patientRequest)));
 
-                                                .param("fullName", fullName)
-                                                .param("nik", nik)
-                                                .param("dateOfBirth", dateOfBirth.toString())
-                                                .param("age", age.toString())
-                                                .param("gender", gender)
-                                                .param("job", job)
-                                                .param("placeOfBirth", placeOfBirth)
-                                                .param("weight", weight.toString())
-                                                .param("height", height.toString())
-                                                .param("bloodType", bloodType)
-                                                .param("phone", phone)
-
-                                                .param("address.street", street)
-                                                .param("address.city", city)
-                                                .param("address.postalCode", postalCode)
-
-                                                .param("user.username", username)
-                                                .param("user.password", password));
-
-                Patient patient = patientRepository.findByNikEquals(nik).orElse(null);
-
-                // Update data
-                fullName = "Miftah";
-                nik = "3271052711040002";
-                dateOfBirth = LocalDate.of(2005, 12, 30);
-                age = 30;
-                weight = 60;
-                height = 170;
-                gender = "Pria";
-                job = "Mahasiswa";
-                placeOfBirth = "Jakarta";
-                bloodType = "A";
-                phone = "081234567891";
-                street = "Jl. Ciherang";
-                city = "Jakarta";
-                postalCode = "16112";
-                username = "miftah";
-                password = "password";
+                Patient patient = patientRepository.findByFullNameEquals(patientRequest.getFullName()).orElse(null);
+                String fullName = "Miftah Update";
+                patientRequest.setFullName(fullName);
 
                 mockMvc.perform(
-                                put("/api/patients/" + patient.getId() + "/edit")
-                                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                                                .accept(MediaType.APPLICATION_JSON_VALUE)
-
-                                                .param("fullName", fullName)
-                                                .param("nik", nik)
-                                                .param("dateOfBirth", dateOfBirth.toString())
-                                                .param("age", age.toString())
-                                                .param("gender", gender)
-                                                .param("job", job)
-                                                .param("placeOfBirth", placeOfBirth)
-                                                .param("weight", weight.toString())
-                                                .param("height", height.toString())
-                                                .param("bloodType", bloodType)
-                                                .param("phone", phone)
-
-                                                .param("address.street", street)
-                                                .param("address.city", city)
-                                                .param("address.postalCode", postalCode)
-
-                                                .param("user.username", username)
-                                                .param("user.password", password))
+                                put("/api/patients/" + patient.getId())
+                                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                .content(objectMapper.writeValueAsString(patientRequest)))
                                 .andExpectAll(
                                                 status().isOk(),
-                                                content().string(Matchers.containsString(
-                                                                "Patient with name " + fullName
-                                                                                + " successfully updated.")));
+                                                jsonPath("$.data.fullName").value(fullName));
         }
 
         @Test
         void deletePatientSuccess() throws Exception {
                 mockMvc.perform(
                                 post("/api/patients")
-                                                .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                                                .accept(MediaType.APPLICATION_JSON_VALUE)
+                                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                .content(objectMapper.writeValueAsString(patientRequest)));
 
-                                                .param("fullName", fullName)
-                                                .param("nik", nik)
-                                                .param("dateOfBirth", dateOfBirth.toString())
-                                                .param("age", age.toString())
-                                                .param("gender", gender)
-                                                .param("job", job)
-                                                .param("placeOfBirth", placeOfBirth)
-                                                .param("weight", weight.toString())
-                                                .param("height", height.toString())
-                                                .param("bloodType", bloodType)
-                                                .param("phone", phone)
-
-                                                .param("address.street", street)
-                                                .param("address.city", city)
-                                                .param("address.postalCode", postalCode)
-
-                                                .param("user.username", username)
-                                                .param("user.password", password));
-
-                Patient patient = patientRepository.findByNikEquals(nik).orElse(null);
+                Patient patient = patientRepository.findByFullNameEquals(patientRequest.getFullName()).orElse(null);
 
                 mockMvc.perform(
-                                delete("/api/patients/" + patient.getId() + "/delete")
-                                                .accept(MediaType.APPLICATION_JSON_VALUE))
+                                delete("/api/patients/" + patient.getId()))
                                 .andExpectAll(
                                                 status().isNoContent());
         }

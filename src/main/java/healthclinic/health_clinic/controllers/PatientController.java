@@ -2,15 +2,15 @@ package healthclinic.health_clinic.controllers;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RestController;
 
 import healthclinic.health_clinic.dto.CreatePatientRequest;
+import healthclinic.health_clinic.dto.GenericResponse;
 import healthclinic.health_clinic.dto.PatientResponse;
 import healthclinic.health_clinic.services.PatientService;
 import jakarta.validation.Valid;
@@ -18,9 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @Slf4j
@@ -30,42 +30,35 @@ public class PatientController {
     @Autowired
     private PatientService patientService;
 
-    @GetMapping(path = "/api/patients", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<PatientResponse>> getPatients() {
-        return ResponseEntity.ok().body(patientService.findAllPatients());
+    @GetMapping(path = "/api/patients")
+    public ResponseEntity<GenericResponse<List<PatientResponse>>> getPatients() {
+
+        GenericResponse<List<PatientResponse>> response = GenericResponse.ok(patientService.findAllPatients());
+
+        return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping(path = "/api/patients", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createPatient(@ModelAttribute @Valid CreatePatientRequest request,
-            BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            List<String> errors = bindingResult.getAllErrors().stream().map(value -> value.getDefaultMessage())
-                    .toList();
+    @PostMapping(path = "/api/patients")
+    public ResponseEntity<GenericResponse<PatientResponse>> createPatient(
+            @RequestBody @Valid CreatePatientRequest request) {
 
-            log.info("Request failed with errors : " + errors.toString());
-            return ResponseEntity.badRequest().body(errors.toString());
-        }
+        GenericResponse<PatientResponse> response = GenericResponse.created(patientService.createPatient(request));
 
-        PatientResponse response = patientService.createPatient(request);
-
-        return ResponseEntity.ok().body("Patient with name " + response.getFullName() + " successfully created.");
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PutMapping(path = "/api/patients/{patientId}/edit", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> updatePatient(@PathVariable(name = "patientId") UUID patientId,
-            @ModelAttribute @Valid CreatePatientRequest request, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            List<String> errors = bindingResult.getAllErrors().stream().map(value -> value.getDefaultMessage())
-                    .collect(Collectors.toList());
-            return ResponseEntity.badRequest().body(errors.toString());
-        }
+    @PutMapping(path = "/api/patients/{patientId}")
+    public ResponseEntity<GenericResponse<PatientResponse>> updatePatient(
+            @PathVariable(name = "patientId") UUID patientId,
+            @RequestBody @Valid CreatePatientRequest request) {
 
-        PatientResponse response = patientService.updatePatient(request, patientId);
+        GenericResponse<PatientResponse> response = GenericResponse
+                .ok(patientService.updatePatient(request, patientId));
 
-        return ResponseEntity.ok().body("Patient with name " + response.getFullName() + " successfully updated.");
+        return ResponseEntity.ok().body(response);
     }
 
-    @DeleteMapping(path = "/api/patients/{patientId}/delete", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(path = "/api/patients/{patientId}")
     public ResponseEntity<Void> deletePatient(@PathVariable(name = "patientId", required = true) UUID patientId) {
         patientService.deletePatient(patientId);
 
