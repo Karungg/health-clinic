@@ -2,7 +2,6 @@ package healthclinic.health_clinic.dto;
 
 import java.time.LocalDate;
 
-import healthclinic.health_clinic.models.User;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

@@ -1,6 +1,7 @@
 package healthclinic.health_clinic.services;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import healthclinic.health_clinic.dto.Address;
 import healthclinic.health_clinic.dto.CreateDoctorRequest;
 import healthclinic.health_clinic.dto.CreateUserRequest;
 import healthclinic.health_clinic.dto.DoctorResponse;
+import healthclinic.health_clinic.exception.ResourceNotFoundException;
 import healthclinic.health_clinic.models.Doctor;
 import healthclinic.health_clinic.models.User;
 import healthclinic.health_clinic.repository.DoctorRepository;
@@ -57,6 +59,44 @@ public class DoctorServiceImpl implements DoctorService {
         log.info("Doctor with name {} successfully created", doctor.getFullName());
 
         return convertToDoctorResponse(doctor);
+    }
+
+    @Transactional
+    public DoctorResponse updateDoctor(CreateDoctorRequest request, UUID doctorId) {
+        log.info("Attempting to create doctor with name {}", request.getFullName());
+
+        Doctor doctorToUpdate = doctorRepository.findById(doctorId).orElseThrow(() -> {
+            log.warn("Failed to update. Doctor with ID {} not found", doctorId);
+            throw new ResourceNotFoundException("Doctor with ID " + doctorId + " not found");
+        });
+
+        validateUniquenessForUpdate(request, doctorToUpdate.getUser().getId(), doctorToUpdate.getId());
+
+        mapDtoToEntity(request, doctorToUpdate);
+
+        User userToUpdate = doctorToUpdate.getUser();
+        userToUpdate.setUsername(request.getUser().getUsername());
+        if (userToUpdate.getPassword() != null && !request.getUser().getPassword().isEmpty()) {
+            userToUpdate.setPassword(passwordEncoder.encode(request.getUser().getPassword()));
+        }
+
+        Doctor updatedDoctor = doctorRepository.save(doctorToUpdate);
+        log.info("Doctor with ID {} successfully updated", updatedDoctor.getId());
+
+        return convertToDoctorResponse(updatedDoctor);
+    }
+
+    @Transactional
+    public void deleteDoctor(UUID doctorId) {
+        log.info("Attempting to delete doctor with ID {}", doctorId);
+
+        if (!doctorRepository.existsById(doctorId)) {
+            log.info("Failed to delete, doctor with ID {} is doesn't exists.", doctorId);
+            throw new ResourceNotFoundException("Doctor with ID " + doctorId + " not found.");
+        }
+
+        doctorRepository.deleteById(doctorId);
+        log.info("Doctor with ID {} successfully deleted", doctorId);
     }
 
     private User createUserAndSave(CreateUserRequest request) {
@@ -104,6 +144,40 @@ public class DoctorServiceImpl implements DoctorService {
             log.info("Failed to create doctor. Username : {} is already exists", username);
             throw new IllegalArgumentException("Username " + username + " is already taken.");
         });
+    }
+
+    private void validateUniquenessForUpdate(CreateDoctorRequest request, UUID userId, UUID doctorId) {
+        if (userRepository.existsByUsernameAndIdNot(request.getUser().getUsername(), userId)) {
+            log.warn("Failed to update doctor, username {} is already exists", request.getUser().getUsername());
+            throw new IllegalArgumentException("Username " + request.getUser().getUsername() + " is already taken.");
+        }
+
+        if (doctorRepository.existsBySipAndIdNot(request.getSip(), doctorId)) {
+            log.warn("Failed to update doctor, sip {} is already exists", request.getSip());
+            throw new IllegalArgumentException("nik " + request.getSip() + " is already taken.");
+        }
+
+        if (doctorRepository.existsByPhoneAndIdNot(request.getPhone(), doctorId)) {
+            log.warn("Failed to update doctor, phone {} is already exists", request.getPhone());
+            throw new IllegalArgumentException("phone " + request.getPhone() + " is already taken.");
+        }
+    }
+
+    private void mapDtoToEntity(CreateDoctorRequest request, Doctor doctorToUpdate) {
+        doctorToUpdate.setFullName(request.getFullName());
+        doctorToUpdate.setSip(request.getSip());
+        doctorToUpdate.setDateOfBirth(request.getDateOfBirth());
+        doctorToUpdate.setAge(request.getAge());
+        doctorToUpdate.setPhone(request.getPhone());
+        doctorToUpdate.setGender(request.getGender());
+        doctorToUpdate.setPlaceOfBirth(request.getPlaceOfBirth());
+
+        Address address = new Address();
+        address.setCity(request.getAddress().getCity());
+        address.setStreet(request.getAddress().getStreet());
+        address.setPostalCode(request.getAddress().getPostalCode());
+
+        doctorToUpdate.setAddress(address);
     }
 
     private DoctorResponse convertToDoctorResponse(Doctor doctor) {

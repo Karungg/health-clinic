@@ -139,5 +139,4 @@ public class PatientControllerTest {
                                 .andExpectAll(
                                                 status().isNoContent());
         }
-
 }
