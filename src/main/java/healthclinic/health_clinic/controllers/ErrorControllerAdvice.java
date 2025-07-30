@@ -21,16 +21,14 @@ public class ErrorControllerAdvice {
 
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleIllegalArgumentException(IllegalArgumentException exception) {
-        Map<String, String> errors = Map.of("error", exception.getMessage());
-
-        return errors;
+    public GenericResponse<String> handleIllegalArgumentException(IllegalArgumentException exception) {
+        return GenericResponse.badRequest(exception.getMessage());
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleResourceNotFoundException(ResourceNotFoundException exception) {
-        return exception.getMessage();
+    public GenericResponse<String> handleResourceNotFoundException(ResourceNotFoundException exception) {
+        return GenericResponse.notFound(exception.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

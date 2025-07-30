@@ -1,6 +1,5 @@
 package healthclinic.health_clinic.dto;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +50,11 @@ public class GenericResponse<T> {
         return success(HttpStatus.CREATED.value(), HttpStatus.CREATED.getReasonPhrase(), data);
     }
 
-    public static <T> GenericResponse<T> badRequest(Map<String, List<String>> errors) {
+    public static <T> GenericResponse<T> badRequest(T errors) {
         return error(HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.getReasonPhrase(), errors);
+    }
+
+    public static <T> GenericResponse<T> notFound(String error) {
+        return error(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase(), error);
     }
 }
