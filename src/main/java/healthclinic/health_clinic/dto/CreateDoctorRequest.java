@@ -2,6 +2,7 @@ package healthclinic.health_clinic.dto;
 
 import java.time.LocalDate;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -18,8 +19,12 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CreateDoctorRequest {
 
+    @Valid
+    @NotNull(message = "{doctor.address.notnull}")
     private Address address;
 
+    @Valid
+    @NotNull(message = "{doctor.user.notnull}")
     private CreateUserRequest user;
 
     @NotBlank(message = "{doctor.fullname.notblank}")

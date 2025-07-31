@@ -37,7 +37,9 @@ public class ErrorControllerAdvice {
             MethodArgumentNotValidException exception) {
         Map<String, List<String>> errors = new HashMap<>();
 
-        exception.getAllErrors().forEach((error) -> {
+        System.out.println(exception.getBindingResult().getAllErrors().toString());
+
+        exception.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
             errors.computeIfAbsent(fieldName, k -> new ArrayList<>()).add(errorMessage);
