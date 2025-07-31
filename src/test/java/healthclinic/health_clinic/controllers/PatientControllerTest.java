@@ -101,8 +101,9 @@ public class PatientControllerTest {
                                                 .content(objectMapper.writeValueAsString(patientRequest)))
                                 .andExpectAll(
                                                 status().isBadRequest(),
-                                                jsonPath("$.errors.nik", Matchers.containsInAnyOrder("Nik harus diisi",
-                                                                "Panjang NIK harus 16 digit")));
+                                                jsonPath("$.errors.nik", Matchers.containsInAnyOrder("NIK harus diisi",
+                                                                "Panjang NIK harus 16 digit",
+                                                                "NIK hanya boleh berisi angka")));
         }
 
         @Test
