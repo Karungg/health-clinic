@@ -9,5 +9,5 @@ import healthclinic.health_clinic.models.MedicalHistory;
 
 @Repository
 public interface MedicalHistoryRepository extends JpaRepository<MedicalHistory, UUID> {
-
+    boolean existsByPatientId(UUID id);
 }

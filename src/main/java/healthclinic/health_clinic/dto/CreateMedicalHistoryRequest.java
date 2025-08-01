@@ -3,6 +3,7 @@ package healthclinic.health_clinic.dto;
 import java.util.UUID;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CreateMedicalHistoryRequest {
 
-    @NotBlank(message = "{medicalHistory.patiendId.notblank}")
+    @NotNull(message = "{medicalHistory.patiendId.notNull}")
     private UUID patientId;
 
     @NotBlank(message = "{medicalHistory.anamnesis.notblank}")

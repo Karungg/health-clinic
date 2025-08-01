@@ -1,5 +1,6 @@
 package healthclinic.health_clinic.dto;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -15,8 +16,6 @@ public class MedicalHistoryResponse {
 
     private UUID id;
 
-    private UUID patientId;
-
     private String anamnesis;
 
     private String bodyCheck;
@@ -24,5 +23,11 @@ public class MedicalHistoryResponse {
     private String diagnose;
 
     private String therapy;
+
+    private UUID patientId;
+
+    private Instant createdAt;
+
+    private Instant updatedAt;
 
 }
