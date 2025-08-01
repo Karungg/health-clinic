@@ -1,6 +1,7 @@
 package healthclinic.health_clinic.services;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +62,40 @@ public class MedicalHistoryServiceImpl implements MedicalHistoryService {
         log.info("Medical history with patient id {} successfully created", savedMedicalHistory.getPatient().getId());
 
         return convertToMedicalHistoryResponse(savedMedicalHistory);
+    }
+
+    @Transactional
+    public MedicalHistoryResponse updateMedicalHistory(CreateMedicalHistoryRequest request, UUID medicalId) {
+        log.info("Attempting to update medical history with id {}", medicalId);
+
+        MedicalHistory medicalHistoryToUpdate = medicalHistoryRepository.findById(medicalId).orElse(null);
+
+        if (medicalHistoryToUpdate == null) {
+            log.warn("Failed to update, Medical history with id {} not found.", medicalId);
+            throw new ResourceNotFoundException("Medical history with id " + medicalId + " not found");
+        }
+
+        medicalHistoryToUpdate.setAnamnesis(request.getAnamnesis());
+        medicalHistoryToUpdate.setBodyCheck(request.getBodyCheck());
+        medicalHistoryToUpdate.setDiagnose(request.getDiagnose());
+        medicalHistoryToUpdate.setTherapy(request.getTherapy());
+
+        MedicalHistory updatedMedicalHistory = medicalHistoryRepository.save(medicalHistoryToUpdate);
+        log.info("Medical history with id {} successfully updated.", updatedMedicalHistory.getId());
+
+        return convertToMedicalHistoryResponse(updatedMedicalHistory);
+    }
+
+    @Transactional
+    public void deleteMedicalHistory(UUID medicalId) {
+        log.info("Attempting to delete medical history with id {}", medicalId);
+
+        if (!medicalHistoryRepository.existsById(medicalId)) {
+            log.warn("Failed to delete, medical history with id {} not found", medicalId);
+            throw new ResourceNotFoundException("Medical history with id " + medicalId + " not found");
+        }
+
+        medicalHistoryRepository.deleteById(medicalId);
     }
 
     private MedicalHistoryResponse convertToMedicalHistoryResponse(MedicalHistory medicalHistory) {
