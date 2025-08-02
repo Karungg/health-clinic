@@ -16,7 +16,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CreateMedicalHistoryRequest {
 
-    @NotNull(message = "{medicalHistory.patiendId.notNull}")
+    @NotNull(message = "{medicalHistory.patientId.notnull}")
     private UUID patientId;
 
     @NotBlank(message = "{medicalHistory.anamnesis.notblank}")
