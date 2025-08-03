@@ -201,7 +201,7 @@ public class PatientServiceImpl implements PatientService {
                 patient.getWeight(),
                 patient.getHeight(),
                 patient.getBloodType(),
-                patient.getUser().getId(),
+                patient.getUser(),
                 patient.getCreatedAt(),
                 patient.getUpdatedAt());
     }
