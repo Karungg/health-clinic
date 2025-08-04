@@ -60,10 +60,10 @@ public class PatientControllerTest {
                 patientRequest = new CreatePatientRequest();
                 patientRequest.setAddress(address);
                 patientRequest.setAge(20);
-                patientRequest.setBloodType("O");
+                patientRequest.setBloodType("AB-");
                 patientRequest.setDateOfBirth(dateOfBirth);
                 patientRequest.setFullName("Pasien 1");
-                patientRequest.setGender("Pria");
+                patientRequest.setGender("MALE");
                 patientRequest.setHeight(200);
                 patientRequest.setJob("Guru");
                 patientRequest.setNik("1234567890123456");

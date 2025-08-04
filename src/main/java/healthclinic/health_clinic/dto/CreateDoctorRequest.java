@@ -2,6 +2,8 @@ package healthclinic.health_clinic.dto;
 
 import java.time.LocalDate;
 
+import healthclinic.health_clinic.Enums.Gender;
+import healthclinic.health_clinic.validator.ValueOfEnum;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -47,6 +49,7 @@ public class CreateDoctorRequest {
     @Size(min = 9, max = 14, message = "{doctor.phone.size}")
     private String phone;
 
+    @ValueOfEnum(enumClass = Gender.class, message = "{doctor.gender.enum}")
     @NotBlank(message = "{doctor.gender.notblank}")
     @Size(max = 6, message = "{doctor.gender.size}")
     private String gender;

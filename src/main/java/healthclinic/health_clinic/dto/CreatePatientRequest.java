@@ -2,6 +2,9 @@ package healthclinic.health_clinic.dto;
 
 import java.time.LocalDate;
 
+import healthclinic.health_clinic.Enums.BloodType;
+import healthclinic.health_clinic.Enums.Gender;
+import healthclinic.health_clinic.validator.ValueOfEnum;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -49,6 +52,7 @@ public class CreatePatientRequest {
     @Size(min = 9, max = 14, message = "{patient.phone.size}")
     private String phone;
 
+    @ValueOfEnum(enumClass = Gender.class, message = "{patient.gender.enum}")
     @NotBlank(message = "{patient.gender.notblank}")
     @Size(max = 6, message = "{patient.gender.size}")
     private String gender;
@@ -71,7 +75,8 @@ public class CreatePatientRequest {
     @Max(value = 999, message = "{patient.height.max}")
     private Integer height;
 
+    @ValueOfEnum(enumClass = BloodType.class, message = "{patient.bloodtype.enum}")
     @NotBlank(message = "{patient.bloodtype.notblank}")
-    @Size(max = 2, message = "{patient.bloodtype.size}")
+    @Size(max = 3, message = "{patient.bloodtype.size}")
     private String bloodType;
 }
