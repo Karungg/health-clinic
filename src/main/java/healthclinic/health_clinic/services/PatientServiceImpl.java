@@ -46,7 +46,7 @@ public class PatientServiceImpl implements PatientService {
     public PatientResponse createPatient(CreatePatientRequest request) {
         log.info("Attempting to create patient with full name {}", request.getFullName());
 
-        validateUniqueness(request.getUser().getUsername(), request.getNik(), request.getPhone());
+        validateUniqueness(request.getNik(), request.getPhone());
 
         User savedUser = createAndSaveUser(request.getUser());
 
@@ -131,12 +131,7 @@ public class PatientServiceImpl implements PatientService {
         return address;
     }
 
-    private void validateUniqueness(String username, String nik, String phone) {
-        userRepository.findByUsernameEquals(username).ifPresent(value -> {
-            log.warn("Patient created failed. Username {} is already exists.", value.getUsername());
-            throw new IllegalArgumentException("Username " + value.getUsername() + " is already taken.");
-        });
-
+    private void validateUniqueness(String nik, String phone) {
         patientRepository.findByNikEquals(nik).ifPresent(value -> {
             log.warn("Patient created failed. NIK {} is already exists.", value.getNik());
             throw new IllegalArgumentException("NIK " + value.getNik() + " is already taken.");

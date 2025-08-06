@@ -1,8 +1,5 @@
 package healthclinic.health_clinic.dto;
 
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.http.HttpStatus;
 
 import com.fasterxml.jackson.annotation.JsonInclude;

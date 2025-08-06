@@ -1,6 +1,8 @@
 package healthclinic.health_clinic.services;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -13,6 +15,7 @@ import healthclinic.health_clinic.Enums.Role;
 import healthclinic.health_clinic.dto.CreateUserRequest;
 import healthclinic.health_clinic.dto.UserResponse;
 import healthclinic.health_clinic.exception.ResourceNotFoundException;
+import healthclinic.health_clinic.exception.UniqueConstraintFieldException;
 import healthclinic.health_clinic.models.User;
 import healthclinic.health_clinic.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +44,12 @@ public class UserServiceImpl implements UserService {
 
         userRepository.findByUsernameEquals(request.getUsername()).ifPresent(u -> {
             log.warn("User creation failed. Username {} already exists.", u.getUsername());
-            throw new IllegalArgumentException("Username " + request.getUsername() + " is already taken.");
+
+            Map<String, List<String>> errors = new HashMap<>();
+            errors.put("user.username", List.of("Username is already taken."));
+
+            throw new UniqueConstraintFieldException("Username " + request.getUsername() + " is already taken.",
+                    errors);
         });
 
         User user = new User();
@@ -66,7 +74,12 @@ public class UserServiceImpl implements UserService {
 
         if (userRepository.existsByUsernameAndIdNot(request.getUsername(), userId)) {
             log.warn("User updated failed. Username {} already exists.", request.getUsername());
-            throw new IllegalArgumentException("Username " + request.getUsername() + " is already taken.");
+
+            Map<String, List<String>> errors = new HashMap<>();
+            errors.put("user.username", List.of("Username is already taken."));
+
+            throw new UniqueConstraintFieldException("Username " + request.getUsername() + " is already taken.",
+                    errors);
         }
 
         user.setUsername(request.getUsername());

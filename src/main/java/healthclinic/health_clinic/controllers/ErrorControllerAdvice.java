@@ -15,6 +15,7 @@ import java.lang.IllegalArgumentException;
 
 import healthclinic.health_clinic.dto.GenericResponse;
 import healthclinic.health_clinic.exception.ResourceNotFoundException;
+import healthclinic.health_clinic.exception.UniqueConstraintFieldException;
 
 @RestControllerAdvice
 public class ErrorControllerAdvice {
@@ -37,8 +38,6 @@ public class ErrorControllerAdvice {
             MethodArgumentNotValidException exception) {
         Map<String, List<String>> errors = new HashMap<>();
 
-        System.out.println(exception.getBindingResult().getAllErrors().toString());
-
         exception.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
@@ -46,5 +45,12 @@ public class ErrorControllerAdvice {
         });
 
         return GenericResponse.badRequest(errors);
+    }
+
+    @ExceptionHandler(UniqueConstraintFieldException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public GenericResponse<Map<String, List<String>>> handleUniqueConstraintFieldException(
+            UniqueConstraintFieldException exception) {
+        return GenericResponse.badRequest(exception.getErrors());
     }
 }

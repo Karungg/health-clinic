@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import healthclinic.health_clinic.Enums.Role;
 import healthclinic.health_clinic.dto.CreateUserRequest;
+import healthclinic.health_clinic.exception.UniqueConstraintFieldException;
 import healthclinic.health_clinic.models.User;
 import healthclinic.health_clinic.repository.UserRepository;
 
@@ -77,7 +78,7 @@ public class UserControllerTest {
                                                 .content(objectMapper.writeValueAsString(request)))
                                 .andExpect(status().isBadRequest())
                                 .andExpect(result -> assertTrue(
-                                                result.getResolvedException() instanceof IllegalArgumentException))
+                                                result.getResolvedException() instanceof UniqueConstraintFieldException))
                                 .andExpect(result -> assertEquals("Username user1 is already taken.",
                                                 result.getResolvedException().getMessage()));
         }
