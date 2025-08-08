@@ -1,6 +1,8 @@
 package healthclinic.health_clinic.services;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -15,6 +17,7 @@ import healthclinic.health_clinic.dto.CreateDoctorRequest;
 import healthclinic.health_clinic.dto.CreateUserRequest;
 import healthclinic.health_clinic.dto.DoctorResponse;
 import healthclinic.health_clinic.exception.ResourceNotFoundException;
+import healthclinic.health_clinic.exception.UniqueConstraintFieldException;
 import healthclinic.health_clinic.models.Doctor;
 import healthclinic.health_clinic.models.User;
 import healthclinic.health_clinic.repository.DoctorRepository;
@@ -130,36 +133,48 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     private void validateUniqueness(String sip, String phone, String username) {
+        Map<String, List<String>> errors = new HashMap<>();
+
         doctorRepository.findBySipEquals(sip).ifPresent(d -> {
-            log.info("Failed to create doctor. SIP : {} is already exists", sip);
-            throw new IllegalArgumentException("SIP " + sip + " is already taken.");
+            log.warn("Failed to create doctor. SIP : {} is already exists", sip);
+            errors.put("sip", List.of("SIP is already taken."));
         });
 
         doctorRepository.findByPhoneEquals(phone).ifPresent(d -> {
-            log.info("Failed to create doctor. Phone : {} is already exists", phone);
-            throw new IllegalArgumentException("Phone " + phone + " is already taken.");
+            log.warn("Failed to create doctor. Phone : {} is already exists", phone);
+            errors.put("phone", List.of("Phone is already taken."));
         });
 
         userRepository.findByUsernameEquals(username).ifPresent(d -> {
-            log.info("Failed to create doctor. Username : {} is already exists", username);
-            throw new IllegalArgumentException("Username " + username + " is already taken.");
+            log.warn("Failed to create doctor. Username : {} is already exists", username);
+            errors.put("user.username", List.of("Username is already taken."));
         });
+
+        if (!errors.isEmpty()) {
+            throw new UniqueConstraintFieldException("Unique validation exception", errors);
+        }
     }
 
     private void validateUniquenessForUpdate(CreateDoctorRequest request, UUID userId, UUID doctorId) {
+        Map<String, List<String>> errors = new HashMap<>();
+
         if (userRepository.existsByUsernameAndIdNot(request.getUser().getUsername(), userId)) {
             log.warn("Failed to update doctor, username {} is already exists", request.getUser().getUsername());
-            throw new IllegalArgumentException("Username " + request.getUser().getUsername() + " is already taken.");
+            errors.put("user.username", List.of("Username is already taken."));
         }
 
         if (doctorRepository.existsBySipAndIdNot(request.getSip(), doctorId)) {
             log.warn("Failed to update doctor, sip {} is already exists", request.getSip());
-            throw new IllegalArgumentException("nik " + request.getSip() + " is already taken.");
+            errors.put("sip", List.of("SIP is already taken."));
         }
 
         if (doctorRepository.existsByPhoneAndIdNot(request.getPhone(), doctorId)) {
             log.warn("Failed to update doctor, phone {} is already exists", request.getPhone());
-            throw new IllegalArgumentException("phone " + request.getPhone() + " is already taken.");
+            errors.put("phone", List.of("Phone is already taken."));
+        }
+
+        if (!errors.isEmpty()) {
+            throw new UniqueConstraintFieldException("Unique validation exception", errors);
         }
     }
 

@@ -1,6 +1,8 @@
 package healthclinic.health_clinic.services;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -15,6 +17,7 @@ import healthclinic.health_clinic.dto.CreatePatientRequest;
 import healthclinic.health_clinic.dto.CreateUserRequest;
 import healthclinic.health_clinic.dto.PatientResponse;
 import healthclinic.health_clinic.exception.ResourceNotFoundException;
+import healthclinic.health_clinic.exception.UniqueConstraintFieldException;
 import healthclinic.health_clinic.models.Patient;
 import healthclinic.health_clinic.models.User;
 import healthclinic.health_clinic.repository.PatientRepository;
@@ -46,7 +49,7 @@ public class PatientServiceImpl implements PatientService {
     public PatientResponse createPatient(CreatePatientRequest request) {
         log.info("Attempting to create patient with full name {}", request.getFullName());
 
-        validateUniqueness(request.getNik(), request.getPhone());
+        validateUniqueness(request.getNik(), request.getPhone(), request.getUser().getUsername());
 
         User savedUser = createAndSaveUser(request.getUser());
 
@@ -131,32 +134,49 @@ public class PatientServiceImpl implements PatientService {
         return address;
     }
 
-    private void validateUniqueness(String nik, String phone) {
+    private void validateUniqueness(String nik, String phone, String username) {
+        Map<String, List<String>> errors = new HashMap<>();
+
         patientRepository.findByNikEquals(nik).ifPresent(value -> {
             log.warn("Patient created failed. NIK {} is already exists.", value.getNik());
-            throw new IllegalArgumentException("NIK " + value.getNik() + " is already taken.");
+            errors.put("nik", List.of("NIK is already taken."));
         });
 
         patientRepository.findByPhoneEquals(phone).ifPresent(value -> {
             log.warn("Patient created failed. Phone {} is already exists.", value.getPhone());
-            throw new IllegalArgumentException("Phone " + value.getPhone() + " is already taken.");
+            errors.put("phone", List.of("Phone is already taken."));
         });
+
+        userRepository.findByUsernameEquals(username).ifPresent(d -> {
+            log.warn("Failed to create patient. Username : {} is already exists", username);
+            errors.put("user.username", List.of("Username is already taken."));
+        });
+
+        if (!errors.isEmpty()) {
+            throw new UniqueConstraintFieldException("Unique validation exception", errors);
+        }
     }
 
     private void validateUniquenessForUpdate(CreatePatientRequest request, UUID userId, UUID patientId) {
+        Map<String, List<String>> errors = new HashMap<>();
+
         if (userRepository.existsByUsernameAndIdNot(request.getUser().getUsername(), userId)) {
             log.warn("Failed to update patient, username {} is already exists", request.getUser().getUsername());
-            throw new IllegalArgumentException("Username " + request.getUser().getUsername() + " is already taken.");
+            errors.put("user.username", List.of("Username is already taken."));
         }
 
         if (patientRepository.existsByNikAndIdNot(request.getNik(), patientId)) {
             log.warn("Failed to update patient, nik {} is already exists", request.getNik());
-            throw new IllegalArgumentException("nik " + request.getNik() + " is already taken.");
+            errors.put("nik", List.of("NIK is already taken."));
         }
 
         if (patientRepository.existsByPhoneAndIdNot(request.getPhone(), patientId)) {
             log.warn("Failed to update patient, phone {} is already exists", request.getPhone());
-            throw new IllegalArgumentException("phone " + request.getPhone() + " is already taken.");
+            errors.put("phone", List.of("Phone is already taken."));
+        }
+
+        if (!errors.isEmpty()) {
+            throw new UniqueConstraintFieldException("Unique validation exception", errors);
         }
     }
 
