@@ -3,6 +3,7 @@ package healthclinic.health_clinic.services;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import healthclinic.health_clinic.dto.CreateMedicineRequest;
 import healthclinic.health_clinic.dto.MedicineResponse;
+import healthclinic.health_clinic.exception.ResourceNotFoundException;
 import healthclinic.health_clinic.exception.UniqueConstraintFieldException;
 import healthclinic.health_clinic.models.Medicine;
 import healthclinic.health_clinic.repository.MedicineRepository;
@@ -61,6 +63,48 @@ public class MedicineServiceImpl implements MedicineService {
         log.info("Medicine with name {} successfully created.", savedMedicine.getName());
 
         return convertToMedicineResponse(savedMedicine);
+    }
+
+    public MedicineResponse updateMedicine(CreateMedicineRequest request, UUID medicineId) {
+        log.info("Attempting to update medicine with ID {}", medicineId);
+
+        Medicine medicineToUpdate = medicineRepository.findById(medicineId).orElseThrow(() -> {
+            throw new ResourceNotFoundException("Medicine with ID " + medicineId + " not found.");
+        });
+
+        if (medicineToUpdate.getName().toLowerCase() == request.getName().toLowerCase()) {
+            String newMedicineCode = generateMedicineCode(request.getName());
+
+            medicineToUpdate.setMedicineCode(newMedicineCode);
+        }
+
+        medicineToUpdate.setName(request.getName());
+        medicineToUpdate.setCategory(request.getCategory());
+        medicineToUpdate.setForm(request.getForm());
+        medicineToUpdate.setStrength(request.getStrength());
+        medicineToUpdate.setDescription(request.getDescription());
+        medicineToUpdate.setManufacturer(request.getManufacturer());
+        medicineToUpdate.setBatchNumber(request.getBatchNumber());
+        medicineToUpdate.setExpiryDate(request.getExpiryDate());
+        medicineToUpdate.setStock(request.getStock());
+        medicineToUpdate.setPrice(request.getPrice());
+        medicineToUpdate.setStorageConditions(request.getStorageConditions());
+
+        Medicine updatedMedicine = medicineRepository.save(medicineToUpdate);
+        log.info("Medicine with ID {} successfully updated.", updatedMedicine.getId());
+
+        return convertToMedicineResponse(updatedMedicine);
+    }
+
+    public void deleteMedicine(UUID medicineId) {
+        log.info("Attempting to delete medicine with ID {}", medicineId);
+
+        medicineRepository.findById(medicineId).orElseThrow(() -> {
+            log.warn("Failed to delete medicine. ID {} not found.", medicineId);
+            throw new ResourceNotFoundException("Medicine with ID " + medicineId + " not found");
+        });
+
+        medicineRepository.deleteById(medicineId);
     }
 
     private String generateMedicineCode(String name) {

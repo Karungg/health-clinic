@@ -1,10 +1,10 @@
 package healthclinic.health_clinic.controllers;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,9 +14,12 @@ import healthclinic.health_clinic.dto.MedicineResponse;
 import healthclinic.health_clinic.services.MedicineService;
 import jakarta.validation.Valid;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 public class MedicineController {
@@ -39,6 +42,26 @@ public class MedicineController {
         GenericResponse<MedicineResponse> response = GenericResponse.created(medicineService.createMedicine(request));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PutMapping(path = "/api/medicines/{medicineId}")
+    public ResponseEntity<GenericResponse<MedicineResponse>> updateMedicine(
+            @PathVariable(name = "medicineId", required = true) UUID medicineId,
+            @RequestBody CreateMedicineRequest request) {
+
+        GenericResponse<MedicineResponse> response = GenericResponse
+                .ok(medicineService.updateMedicine(request, medicineId));
+
+        return ResponseEntity.ok().body(response);
+    }
+
+    @DeleteMapping(path = "/api/medicines/{medicineId}")
+    public ResponseEntity<GenericResponse<Void>> deleteMedicine(
+            @PathVariable(name = "medicineId", required = true) UUID medicineId) {
+
+        medicineService.deleteMedicine(medicineId);
+
+        return ResponseEntity.noContent().build();
     }
 
 }
