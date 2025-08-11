@@ -34,7 +34,7 @@ public class Medicine {
     @Column(name = "medicine_code", nullable = false, unique = true)
     private String medicineCode;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     @Enumerated(EnumType.STRING)

@@ -21,19 +21,15 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateMedicineRequest {
-    @NotBlank(message = "{medicine.medicineCode.notblank}")
-    @Pattern(regexp = "^[A-Z]{4}-\\d{3}$", message = "{medicine.medicineCode.pattern}")
-    private String medicineCode;
-
     @NotBlank(message = "{medicine.name.notblank}")
-    @Size(min = 2, max = 100, message = "{medicine.name.size}")
+    @Size(min = 3, max = 100, message = "{medicine.name.size}")
     private String name;
 
     @NotNull(message = "{medicine.category.notnull}")
     private MedicineCategory category;
 
     @NotBlank(message = "{medicine.form.notblank}")
-    @Size(min = 2, max = 50, message = "{medicine.form.size}")
+    @Size(min = 3, max = 50, message = "{medicine.form.size}")
     private String form;
 
     @NotBlank(message = "{medicine.strength.notblank}")
@@ -45,7 +41,7 @@ public class CreateMedicineRequest {
     private String description;
 
     @NotBlank(message = "{medicine.manufacturer.notblank}")
-    @Size(min = 2, max = 100, message = "{medicine.manufacturer.size}")
+    @Size(min = 3, max = 100, message = "{medicine.manufacturer.size}")
     private String manufacturer;
 
     @NotBlank(message = "{medicine.batchNumber.notblank}")
