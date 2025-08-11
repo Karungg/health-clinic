@@ -53,11 +53,11 @@ public class Medicine {
     @Column(nullable = false)
     private String manufacturer;
 
-    @Column(nullable = false)
-    private String batch_number;
+    @Column(name = "batch_number", nullable = false)
+    private String batchNumber;
 
-    @Column(nullable = false)
-    private LocalDate expiry_date;
+    @Column(name = "expiry_date", nullable = false)
+    private LocalDate expiryDate;
 
     @Column(nullable = false)
     private Integer stock;
@@ -65,8 +65,8 @@ public class Medicine {
     @Column(nullable = false)
     private BigDecimal price;
 
-    @Column(nullable = false)
-    private String storage_conditions;
+    @Column(name = "storage_conditions", nullable = false)
+    private String storageConditions;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false)
