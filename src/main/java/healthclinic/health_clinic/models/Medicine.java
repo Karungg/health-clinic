@@ -3,6 +3,7 @@ package healthclinic.health_clinic.models;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -17,6 +18,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 import jakarta.persistence.GenerationType;
@@ -67,6 +69,9 @@ public class Medicine {
 
     @Column(name = "storage_conditions", nullable = false)
     private String storageConditions;
+
+    @OneToMany(mappedBy = "medicine")
+    private List<TransactionDetail> transactionDetails;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false)

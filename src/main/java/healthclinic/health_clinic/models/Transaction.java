@@ -2,6 +2,7 @@ package healthclinic.health_clinic.models;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -19,6 +20,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -54,6 +56,9 @@ public class Transaction {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "doctor_id", referencedColumnName = "id", nullable = false)
     private Doctor doctor;
+
+    @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
+    private List<TransactionDetail> transactionDetails;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false)

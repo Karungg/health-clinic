@@ -17,6 +17,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 import jakarta.persistence.GenerationType;
@@ -41,6 +42,12 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    @OneToOne(mappedBy = "user")
+    private Doctor doctor;
+
+    @OneToOne(mappedBy = "user")
+    private Patient patient;
 
     @CreatedDate
     @Column(name = "created_at")
