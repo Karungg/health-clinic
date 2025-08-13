@@ -14,7 +14,7 @@ import static org.assertj.core.groups.Tuple.tuple;
 import jakarta.validation.ConstraintViolation;
 
 @SpringBootTest
-public class createPatientRequestTest {
+public class CreatePatientRequestTest {
 
     @Autowired
     private Validator validator;

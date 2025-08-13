@@ -36,9 +36,9 @@ public class CreateTransactionRequest {
     @NotNull(message = "{transaction.transactiondetails.notnull}")
     private List<CreateTransactionDetailRequest> transactionDetails;
 
-    @NotBlank(message = "{transaction.patientid.notblank}")
+    @NotNull(message = "{transaction.patientid.notnull}")
     private UUID patientId;
 
-    @NotBlank(message = "{transaction.doctorid.notblank}")
+    @NotNull(message = "{transaction.doctorid.notnull}")
     private UUID doctorId;
 }
