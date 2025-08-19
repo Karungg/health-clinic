@@ -26,7 +26,7 @@ public class TransactionResponse {
 
     private String treatment;
 
-    private PaymentMethod paymentMethod;
+    private String paymentMethod;
 
     private BigDecimal total;
 

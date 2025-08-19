@@ -42,9 +42,8 @@ public class Transaction {
     @Column(nullable = false, length = 512)
     private String treatment;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "payment_method")
-    private PaymentMethod paymentMethod;
+    private String paymentMethod;
 
     @Column(nullable = false)
     private BigDecimal total;

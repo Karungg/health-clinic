@@ -9,5 +9,5 @@ public interface TransactionService {
 
     List<TransactionResponse> findAllTransactions();
 
-    // TransactionResponse createTransaction(CreateTransactionRequest request);
+    TransactionResponse createTransaction(CreateTransactionRequest request);
 }
