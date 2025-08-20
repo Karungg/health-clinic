@@ -3,6 +3,7 @@ package healthclinic.health_clinic.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,10 +35,11 @@ public class TransactionController {
     @PostMapping(path = "/api/transactions")
     public ResponseEntity<GenericResponse<TransactionResponse>> createTransaction(
             @RequestBody @Valid CreateTransactionRequest request) {
-        
-        GenericResponse<TransactionResponse> response = transactionService.crea
 
-        return entity;
+        GenericResponse<TransactionResponse> response = GenericResponse
+                .created(transactionService.createTransaction(request));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
 }
