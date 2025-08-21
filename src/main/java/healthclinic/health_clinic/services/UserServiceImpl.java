@@ -38,6 +38,16 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public UserResponse getUserById(UUID userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> {
+            log.warn("User with ID {} not found", userId);
+            throw new ResourceNotFoundException("User with ID " + userId + " not found");
+        });
+
+        return convertToUserResponse(user);
+    }
+
     @Transactional
     public UserResponse createUser(CreateUserRequest request) {
         log.info("Attempting to create user with username {}", request.getUsername());

@@ -9,6 +9,8 @@ import healthclinic.health_clinic.dto.UserResponse;
 public interface UserService {
     List<UserResponse> findAllUsers();
 
+    UserResponse getUserById(UUID userId);
+
     UserResponse createUser(CreateUserRequest request);
 
     UserResponse updateUser(UUID userId, CreateUserRequest request);

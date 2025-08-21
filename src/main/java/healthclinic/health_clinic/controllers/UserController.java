@@ -37,6 +37,15 @@ public class UserController {
         return ResponseEntity.ok().body(response);
     }
 
+    @GetMapping(path = "/api/users/{userId}")
+    public ResponseEntity<GenericResponse<UserResponse>> getUserById(
+            @PathVariable(name = "userId", required = true) UUID userId) {
+
+        GenericResponse<UserResponse> response = GenericResponse.ok(userService.getUserById(userId));
+
+        return ResponseEntity.ok().body(response);
+    }
+
     @PostMapping(path = "/api/users")
     public ResponseEntity<GenericResponse<UserResponse>> createUser(@RequestBody @Valid CreateUserRequest request) {
 

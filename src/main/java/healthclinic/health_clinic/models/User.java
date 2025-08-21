@@ -43,12 +43,6 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
-    @OneToOne(mappedBy = "user")
-    private Doctor doctor;
-
-    @OneToOne(mappedBy = "user")
-    private Patient patient;
-
     @CreatedDate
     @Column(name = "created_at")
     private Instant createdAt;
