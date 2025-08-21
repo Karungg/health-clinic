@@ -45,6 +45,16 @@ public class DoctorServiceImpl implements DoctorService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public DoctorResponse getDoctorById(UUID doctorId) {
+        Doctor doctor = doctorRepository.findById(doctorId).orElseThrow(() -> {
+            log.warn("Doctor with ID {} not found", doctorId);
+            throw new ResourceNotFoundException("Doctor with ID " + doctorId + " not found");
+        });
+
+        return convertToDoctorResponse(doctor);
+    }
+
     @Transactional
     public DoctorResponse createDoctor(CreateDoctorRequest request) {
         log.info("Attempting to create doctor with name {}", request.getFullName());
