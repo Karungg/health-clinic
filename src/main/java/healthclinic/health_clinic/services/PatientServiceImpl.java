@@ -45,6 +45,16 @@ public class PatientServiceImpl implements PatientService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public PatientResponse getPatientById(UUID patientId) {
+        Patient patient = patientRepository.findById(patientId).orElseThrow(() -> {
+            log.warn("Patient with ID {} not found", patientId);
+            throw new ResourceNotFoundException("Patient with ID " + patientId + " not found");
+        });
+
+        return convertToPatientResponse(patient);
+    }
+
     @Transactional
     public PatientResponse createPatient(CreatePatientRequest request) {
         log.info("Attempting to create patient with full name {}", request.getFullName());

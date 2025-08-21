@@ -37,6 +37,15 @@ public class PatientController {
         return ResponseEntity.ok().body(response);
     }
 
+    @GetMapping(path = "/api/patients/{patientId}")
+    public ResponseEntity<GenericResponse<PatientResponse>> getPatientById(
+            @PathVariable(name = "patientId", required = true) UUID patientId) {
+
+        GenericResponse<PatientResponse> response = GenericResponse.ok(patientService.getPatientById(patientId));
+
+        return ResponseEntity.ok().body(response);
+    }
+
     @PostMapping(path = "/api/patients")
     public ResponseEntity<GenericResponse<PatientResponse>> createPatient(
             @RequestBody @Valid CreatePatientRequest request) {

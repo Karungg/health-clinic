@@ -9,6 +9,8 @@ import healthclinic.health_clinic.dto.PatientResponse;
 public interface PatientService {
     List<PatientResponse> findAllPatients();
 
+    PatientResponse getPatientById(UUID patientId);
+
     PatientResponse createPatient(CreatePatientRequest request);
 
     PatientResponse updatePatient(CreatePatientRequest request, UUID patientId);
