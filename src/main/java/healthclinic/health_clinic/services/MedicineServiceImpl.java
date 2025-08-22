@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import healthclinic.health_clinic.dto.CreateMedicineRequest;
 import healthclinic.health_clinic.dto.MedicineResponse;
@@ -24,6 +25,7 @@ public class MedicineServiceImpl implements MedicineService {
     @Autowired
     private MedicineRepository medicineRepository;
 
+    @Transactional(readOnly = true)
     public List<MedicineResponse> findAllMedicines() {
         return medicineRepository
                 .findAll()
@@ -32,6 +34,17 @@ public class MedicineServiceImpl implements MedicineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public MedicineResponse getMedicineById(UUID medicineId) {
+        Medicine medicine = medicineRepository.findById(medicineId).orElseThrow(() -> {
+            log.warn("Medicine with ID {} not found");
+            throw new ResourceNotFoundException("Medicine with ID " + medicineId + " not found");
+        });
+
+        return convertToMedicineResponse(medicine);
+    }
+
+    @Transactional
     public MedicineResponse createMedicine(CreateMedicineRequest request) {
         log.info("Attempting to create medicine with name {}", request.getName());
 
@@ -65,6 +78,7 @@ public class MedicineServiceImpl implements MedicineService {
         return convertToMedicineResponse(savedMedicine);
     }
 
+    @Transactional
     public MedicineResponse updateMedicine(CreateMedicineRequest request, UUID medicineId) {
         log.info("Attempting to update medicine with ID {}", medicineId);
 
@@ -96,6 +110,7 @@ public class MedicineServiceImpl implements MedicineService {
         return convertToMedicineResponse(updatedMedicine);
     }
 
+    @Transactional
     public void deleteMedicine(UUID medicineId) {
         log.info("Attempting to delete medicine with ID {}", medicineId);
 

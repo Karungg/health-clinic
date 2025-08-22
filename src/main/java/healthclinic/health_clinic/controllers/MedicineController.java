@@ -35,6 +35,15 @@ public class MedicineController {
         return ResponseEntity.ok().body(response);
     }
 
+    @GetMapping(path = "/api/medicines/{medicineId}")
+    public ResponseEntity<GenericResponse<MedicineResponse>> getMedicineById(
+            @PathVariable(name = "medicineId", required = true) UUID medicineId) {
+
+        GenericResponse<MedicineResponse> response = GenericResponse.ok(medicineService.getMedicineById(medicineId));
+
+        return ResponseEntity.ok().body(response);
+    }
+
     @PostMapping(path = "/api/medicines")
     public ResponseEntity<GenericResponse<MedicineResponse>> createMedicine(
             @RequestBody @Valid CreateMedicineRequest request) {
@@ -47,7 +56,7 @@ public class MedicineController {
     @PutMapping(path = "/api/medicines/{medicineId}")
     public ResponseEntity<GenericResponse<MedicineResponse>> updateMedicine(
             @PathVariable(name = "medicineId", required = true) UUID medicineId,
-            @RequestBody CreateMedicineRequest request) {
+            @RequestBody @Valid CreateMedicineRequest request) {
 
         GenericResponse<MedicineResponse> response = GenericResponse
                 .ok(medicineService.updateMedicine(request, medicineId));

@@ -9,6 +9,8 @@ import healthclinic.health_clinic.dto.MedicineResponse;
 public interface MedicineService {
     List<MedicineResponse> findAllMedicines();
 
+    MedicineResponse getMedicineById(UUID medicineId);
+
     MedicineResponse createMedicine(CreateMedicineRequest request);
 
     MedicineResponse updateMedicine(CreateMedicineRequest request, UUID medicineId);
