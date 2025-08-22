@@ -37,6 +37,17 @@ public class MedicalHistoryController {
 
     }
 
+    @GetMapping(path = "/api/medical-histories/{medicalId}")
+    public ResponseEntity<GenericResponse<MedicalHistoryResponse>> getMedicalHistoryById(
+            @PathVariable(name = "medicalId", required = true) UUID medicalId) {
+
+        GenericResponse<MedicalHistoryResponse> response = GenericResponse
+                .ok(medicalHistoryService.getMedicalById(medicalId));
+
+        return ResponseEntity.ok().body(response);
+
+    }
+
     @PostMapping(path = "/api/medical-histories")
     public ResponseEntity<GenericResponse<MedicalHistoryResponse>> createMedicalHistory(
             @RequestBody @Valid CreateMedicalHistoryRequest request) {

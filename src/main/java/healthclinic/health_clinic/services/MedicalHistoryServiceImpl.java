@@ -34,6 +34,16 @@ public class MedicalHistoryServiceImpl implements MedicalHistoryService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public MedicalHistoryResponse getMedicalById(UUID medicalId) {
+        MedicalHistory medicalHistory = medicalHistoryRepository.findById(medicalId).orElseThrow(() -> {
+            log.warn("Medical history with ID {} not found");
+            throw new ResourceNotFoundException("Medical history with ID " + medicalId + " not found");
+        });
+
+        return convertToMedicalHistoryResponse(medicalHistory);
+    }
+
     @Transactional
     public MedicalHistoryResponse createMedicalHistory(CreateMedicalHistoryRequest request) {
         log.info("Attempting to create medical history with patient id {}", request.getPatientId());

@@ -41,7 +41,7 @@ public class MedicalHistory {
     @Column(name = "therapy", nullable = false)
     private String therapy;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne
     @JoinColumn(name = "patient_id", nullable = false, unique = true, referencedColumnName = "id")
     private Patient patient;
 

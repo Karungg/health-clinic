@@ -10,6 +10,8 @@ public interface MedicalHistoryService {
 
     List<MedicalHistoryResponse> findAllMedicalHistories();
 
+    MedicalHistoryResponse getMedicalById(UUID medicalId);
+
     MedicalHistoryResponse createMedicalHistory(CreateMedicalHistoryRequest request);
 
     MedicalHistoryResponse updateMedicalHistory(CreateMedicalHistoryRequest request, UUID medicalId);

@@ -79,6 +79,9 @@ public class Patient {
     @OneToMany(mappedBy = "patient")
     private List<Transaction> transactions;
 
+    @OneToOne(mappedBy = "patient", orphanRemoval = true, cascade = CascadeType.ALL)
+    private MedicalHistory medicalHistory;
+
     @CreatedDate
     @Column(name = "created_at")
     private Instant createdAt;

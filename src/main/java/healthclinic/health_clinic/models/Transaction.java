@@ -7,15 +7,13 @@ import java.util.UUID;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import healthclinic.health_clinic.Enums.PaymentMethod;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -56,14 +54,14 @@ public class Transaction {
     @JoinColumn(name = "doctor_id", referencedColumnName = "id", nullable = false)
     private Doctor doctor;
 
-    @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "transaction", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TransactionDetail> transactionDetails;
 
     @CreatedDate
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at")
     private Instant createdAt;
 
-    @LastModifiedBy
-    @Column(name = "updated_at", nullable = false)
+    @LastModifiedDate
+    @Column(name = "updated_at")
     private Instant updatedAt;
 }

@@ -1,0 +1,13 @@
+package healthclinic.health_clinic.repository;
+
+import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import healthclinic.health_clinic.models.TransactionDetail;
+
+@Repository
+public interface TransactionDetailRepository extends JpaRepository<TransactionDetail, UUID> {
+
+}
