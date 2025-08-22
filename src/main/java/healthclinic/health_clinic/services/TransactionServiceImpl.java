@@ -1,16 +1,13 @@
 package healthclinic.health_clinic.services;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import healthclinic.health_clinic.dto.CreateTransactionDetailRequest;
 import healthclinic.health_clinic.dto.CreateTransactionRequest;
 import healthclinic.health_clinic.dto.TransactionResponse;
 import healthclinic.health_clinic.exception.ResourceNotFoundException;
@@ -22,7 +19,6 @@ import healthclinic.health_clinic.models.TransactionDetail;
 import healthclinic.health_clinic.repository.DoctorRepository;
 import healthclinic.health_clinic.repository.MedicineRepository;
 import healthclinic.health_clinic.repository.PatientRepository;
-import healthclinic.health_clinic.repository.TransactionDetailRepository;
 import healthclinic.health_clinic.repository.TransactionRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -33,9 +29,6 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
     private TransactionRepository transactionRepository;
-
-    @Autowired
-    private TransactionDetailRepository transactionDetailRepository;
 
     @Autowired
     private PatientRepository patientRepository;
@@ -101,6 +94,7 @@ public class TransactionServiceImpl implements TransactionService {
             transactionDetails.add(transactionDetailToSave);
         });
 
+        // Save transaction detail to transaction
         transactionSaved.setTransactionDetails(transactionDetails);
 
         log.info("Transaction with ID {} successfully created", transactionSaved.getId());

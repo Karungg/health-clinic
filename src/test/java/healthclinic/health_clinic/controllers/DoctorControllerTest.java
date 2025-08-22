@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,6 +40,7 @@ public class DoctorControllerTest {
         private ObjectMapper objectMapper;
 
         private CreateDoctorRequest doctorRequest;
+        private CreateUserRequest userRequest;
 
         @BeforeEach
         void setUp() {
@@ -49,9 +51,9 @@ public class DoctorControllerTest {
                 address.setPostalCode("16221");
                 address.setStreet("Jalan");
 
-                CreateUserRequest user = new CreateUserRequest();
-                user.setUsername("user1");
-                user.setPassword("password");
+                userRequest = new CreateUserRequest();
+                userRequest.setUsername("user1");
+                userRequest.setPassword("password");
 
                 doctorRequest = new CreateDoctorRequest();
                 doctorRequest.setAddress(address);
@@ -62,7 +64,7 @@ public class DoctorControllerTest {
                 doctorRequest.setSip("123/abc/232/2023");
                 doctorRequest.setPhone("123456789");
                 doctorRequest.setPlaceOfBirth("Bogor");
-                doctorRequest.setUser(user);
+                doctorRequest.setUser(userRequest);
         }
 
         @Test
@@ -70,6 +72,28 @@ public class DoctorControllerTest {
                 mockMvc.perform(get("/api/doctors"))
                                 .andExpect(status().isOk())
                                 .andExpect(content().string(Matchers.containsString("[]")));
+        }
+
+        @Test
+        void getDoctorByIdSuccess() throws Exception {
+                mockMvc.perform(
+                                post("/api/doctors")
+                                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                .content(objectMapper.writeValueAsString(doctorRequest)));
+
+                Doctor doctor = doctorRepository.findAll().get(0);
+                mockMvc.perform(
+                                get("/api/doctors/" + doctor.getId()))
+                                .andExpectAll(status().isOk(),
+                                                jsonPath("$.data.id",
+                                                                Matchers.containsString(doctor.getId().toString())));
+        }
+
+        @Test
+        void getDoctorByIdErrorNotFound() throws Exception {
+                mockMvc.perform(
+                                get("/api/doctors/" + UUID.randomUUID()))
+                                .andExpectAll(status().isNotFound());
         }
 
         @Test
@@ -84,7 +108,7 @@ public class DoctorControllerTest {
         }
 
         @Test
-        void createDoctorError() throws Exception {
+        void createDoctorErrorLength() throws Exception {
                 doctorRequest.setSip("");
 
                 mockMvc.perform(
@@ -95,6 +119,25 @@ public class DoctorControllerTest {
                                                 status().isBadRequest(),
                                                 jsonPath("$.errors.sip", Matchers.containsInAnyOrder("SIP harus diisi",
                                                                 "Panjang SIP harus 16 digit")));
+        }
+
+        @Test
+        void createDoctorErrorUnique() throws Exception {
+                mockMvc.perform(
+                                post("/api/doctors")
+                                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                .content(objectMapper.writeValueAsString(doctorRequest)));
+
+                mockMvc.perform(
+                                post("/api/doctors")
+                                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                .content(objectMapper.writeValueAsString(doctorRequest)))
+                                .andExpectAll(
+                                                status().isBadRequest(),
+                                                jsonPath("$.errors['user.username']")
+                                                                .value("Username is already taken."),
+                                                jsonPath("$.errors['phone']").value("Phone is already taken."),
+                                                jsonPath("$.errors['sip']").value("SIP is already taken."));
         }
 
         @Test
@@ -118,6 +161,62 @@ public class DoctorControllerTest {
         }
 
         @Test
+        void updateDoctorErrorEmpty() throws Exception {
+                mockMvc.perform(
+                                post("/api/doctors")
+                                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                .content(objectMapper.writeValueAsString(doctorRequest)));
+
+                Doctor doctor = doctorRepository.findBySipEquals(doctorRequest.getSip()).orElse(null);
+                String fullName = "";
+                doctorRequest.setFullName(fullName);
+
+                mockMvc.perform(
+                                put("/api/doctors/" + doctor.getId())
+                                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                .content(objectMapper.writeValueAsString(doctorRequest)))
+                                .andExpectAll(
+                                                status().isBadRequest(),
+                                                jsonPath("$.errors['fullName']").value(Matchers.containsInAnyOrder(
+                                                                "Nama lengkap harus diisi",
+                                                                "Panjang nama lengkap harus minimal 3 karakter")));
+        }
+
+        @Test
+        void updateDoctorErrorUnique() throws Exception {
+                // Doctor 1
+                mockMvc.perform(
+                                post("/api/doctors")
+                                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                .content(objectMapper.writeValueAsString(doctorRequest)));
+
+                // Doctor 2
+                userRequest.setUsername("doctor2");
+                doctorRequest.setSip("111/aaa/111/1234");
+                doctorRequest.setPhone("111111111");
+                mockMvc.perform(
+                                post("/api/doctors")
+                                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                .content(objectMapper.writeValueAsString(doctorRequest)));
+
+                Doctor doctor = doctorRepository.findBySipEquals(doctorRequest.getSip()).orElse(null); // get doctor 2
+                doctorRequest.setSip("123/abc/232/2023");
+                doctorRequest.setPhone("123456789");
+                userRequest.setUsername("user1");
+
+                mockMvc.perform(
+                                put("/api/doctors/" + doctor.getId())
+                                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                                .content(objectMapper.writeValueAsString(doctorRequest)))
+                                .andExpectAll(
+                                                status().isBadRequest(),
+                                                jsonPath("$.errors['user.username']")
+                                                                .value("Username is already taken."),
+                                                jsonPath("$.errors['sip']").value("SIP is already taken."),
+                                                jsonPath("$.errors['phone']").value("Phone is already taken."));
+        }
+
+        @Test
         void deleteDoctorsuccess() throws Exception {
                 mockMvc.perform(
                                 post("/api/doctors")
@@ -130,5 +229,11 @@ public class DoctorControllerTest {
                                 delete("/api/doctors/" + doctor.getId()))
                                 .andExpectAll(
                                                 status().isNoContent());
+        }
+
+        @Test
+        void deleteDoctorError() throws Exception {
+                mockMvc.perform(
+                                delete("/api/doctors/" + UUID.randomUUID())).andExpect(status().isNotFound());
         }
 }
