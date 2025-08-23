@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -40,11 +41,12 @@ public class CreatePatientRequest {
     @Size(min = 16, max = 16, message = "{patient.nik.size}")
     private String nik;
 
+    @PastOrPresent(message = "{patient.dateOfBirth.pastorpresent}")
     @NotNull(message = "{patient.dateOfBirth.notnull}")
     private LocalDate dateOfBirth;
 
     @NotNull(message = "{patient.age.notnull}")
-    @Min(value = 0, message = "{patient.age.min}")
+    @Min(value = 1, message = "{patient.age.min}")
     @Max(value = 999, message = "{patient.age.max}")
     private Integer age;
 
@@ -66,12 +68,12 @@ public class CreatePatientRequest {
     private String placeOfBirth;
 
     @NotNull(message = "{patient.weight.notnull}")
-    @Min(value = 0, message = "{patient.weight.min}")
+    @Min(value = 1, message = "{patient.weight.min}")
     @Max(value = 999, message = "{patient.weight.max}")
     private Integer weight;
 
     @NotNull(message = "{patient.height.notnull}")
-    @Min(value = 0, message = "{patient.height.min}")
+    @Min(value = 1, message = "{patient.height.min}")
     @Max(value = 999, message = "{patient.height.max}")
     private Integer height;
 
