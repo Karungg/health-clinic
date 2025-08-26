@@ -100,12 +100,14 @@ public class MedicalHistoryServiceImpl implements MedicalHistoryService {
     public void deleteMedicalHistory(UUID medicalId) {
         log.info("Attempting to delete medical history with id {}", medicalId);
 
-        if (!medicalHistoryRepository.existsById(medicalId)) {
+        MedicalHistory medicalHistory = medicalHistoryRepository.findById(medicalId).orElseThrow(() -> {
             log.warn("Failed to delete, medical history with id {} not found", medicalId);
             throw new ResourceNotFoundException("Medical history with id " + medicalId + " not found");
-        }
+        });
 
-        medicalHistoryRepository.deleteById(medicalId);
+        Patient patient = medicalHistory.getPatient();
+        patient.setMedicalHistory(null);
+        patientRepository.save(patient);
     }
 
     private MedicalHistoryResponse convertToMedicalHistoryResponse(MedicalHistory medicalHistory) {
