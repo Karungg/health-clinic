@@ -9,6 +9,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import healthclinic.health_clinic.converter.AddressAttributeConverter;
 import healthclinic.health_clinic.dto.Address;
 import jakarta.persistence.CascadeType;
@@ -65,6 +67,7 @@ public class Doctor {
     private User user;
 
     @OneToMany(mappedBy = "doctor")
+    @JsonIgnore
     private List<Transaction> transactions;
 
     @CreatedDate

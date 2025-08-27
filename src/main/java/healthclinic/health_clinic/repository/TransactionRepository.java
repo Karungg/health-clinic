@@ -9,5 +9,4 @@ import healthclinic.health_clinic.models.Transaction;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
-
 }

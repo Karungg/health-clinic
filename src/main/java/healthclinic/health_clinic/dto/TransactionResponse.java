@@ -5,7 +5,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-import healthclinic.health_clinic.Enums.PaymentMethod;
 import healthclinic.health_clinic.models.Doctor;
 import healthclinic.health_clinic.models.Patient;
 import healthclinic.health_clinic.models.TransactionDetail;
